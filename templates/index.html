@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html>
+{% extends "header.html" %}
 
-<head>
+{% block body %}
 
-</head>
-
-<body>
 {% if not message %}
 	<a href="/login">Login</a>
 	<a href="/register">Register</a>
@@ -28,6 +24,5 @@
 	        <hr>
 	{% endfor %}
 	{% endif %}
-</body>
 
-</html>
+{% endblock %}
