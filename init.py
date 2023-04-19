@@ -9,7 +9,7 @@ app = Flask(__name__)
 conn = pymysql.connect(host='localhost',
                        user='root',
                        password='',
-                       db='blog',
+                       db='air_reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
 
@@ -38,7 +38,7 @@ def loginAuth():
 	#cursor used to send queries
 	cursor = conn.cursor()
 	#executes query
-	query = 'SELECT * FROM user WHERE username = %s and password = %s'
+	query = 'SELECT * FROM Customer WHERE email = %s and password = %s'
 	cursor.execute(query, (username, password))
 	#stores the results in a variable
 	data = cursor.fetchone()
@@ -48,7 +48,7 @@ def loginAuth():
 	if(data):
 		#creates a session for the the user
 		#session is a built in
-		session['username'] = username
+		session['username'] = data['FirstName']
 		return redirect(url_for('home'))
 	else:
 		#returns an error message to the html page
@@ -85,21 +85,21 @@ def registerAuth():
 @app.route('/home')
 def home():
     
-    username = session['username']
-    cursor = conn.cursor();
-    query = 'SELECT ts, blog_post FROM blog WHERE username = %s ORDER BY ts DESC'
-    cursor.execute(query, (username))
-    data1 = cursor.fetchall() 
-    for each in data1:
-        print(each['blog_post'])
-    cursor.close()
-    return render_template('home.html', username=username, posts=data1)
+	username = None
+	if 'username' in session:
+		username = session['username']
+	cursor = conn.cursor()
+	query = 'SELECT * FROM Flight'
+	cursor.execute(query)
+	data1 = cursor.fetchall() 
+	cursor.close()
+	return render_template('home.html', username=username, flights=data1)
 
 		
 @app.route('/post', methods=['GET', 'POST'])
 def post():
 	username = session['username']
-	cursor = conn.cursor();
+	cursor = conn.cursor()
 	blog = request.form['blog']
 	query = 'INSERT INTO blog (blog_post, username) VALUES(%s, %s)'
 	cursor.execute(query, (blog, username))
