@@ -96,16 +96,19 @@ def home():
 	return render_template('home.html', username=username, flights=data1)
 
 		
-@app.route('/post', methods=['GET', 'POST'])
+@app.route('/book', methods=['GET', 'POST'])
 def post():
-	username = session['username']
 	cursor = conn.cursor()
-	blog = request.form['blog']
-	query = 'INSERT INTO blog (blog_post, username) VALUES(%s, %s)'
-	cursor.execute(query, (blog, username))
+	source = request.form['source']
+	destination = request.form['destination']
+	depart = request.form['depart']
+	ret = request.form['return']
+	query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
+	cursor.execute(query, (source))
+	search = cursor.fetchall()
 	conn.commit()
 	cursor.close()
-	return redirect(url_for('home'))
+	return redirect(url_for('home', search=search))
 
 @app.route('/logout')
 def logout():
