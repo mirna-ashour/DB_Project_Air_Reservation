@@ -22,11 +22,11 @@ INSERT INTO staff_phone_num VALUES ('marthastew123', 1234567');
 INSERT INTO staff_email VALUES ('marthastew123',
 'marthas@gmail.com');
 
-INSERT INTO Flight VALUES ('Jet Blue', 3456, '18:19:03', '2023-08-05',  '23:19:03', '2023-08-05', 400, 'on-time'),
+INSERT INTO Flight VALUES ('Jet Blue', 3456, '18:19:03', '2023-08-05',  '23:19:03', '2023-08-05', 1, 2, 400, 'on-time'),
                            
-('Jet Blue', 3894, '12:04:19', '2023-04-19',  '18:03:03', '2023-08-06', 1000, 'on-time'),
+('Jet Blue', 3894, '12:04:19', '2023-04-19',  '18:03:03', '2023-08-06', 2, 1, 1000, 'on-time'),
                            
-('Jet Blue', 9353, '03:19:03', '2023-03-22',  '16:08:18', '2023-03-22', 297, 'delayed');
+('Jet Blue', 9353, '03:19:03', '2023-03-22',  '16:08:18', '2023-03-22', 1, 2, 297, 'delayed');
 
 INSERT INTO Ticket() VALUES
 ('Jet Blue', 3456, ‘18:19:03', '2023-08-05’,  'Mirna', 'Ashour', ‘2002-11-20’, 2746728, 'Mirna Ashour', ’2023-05-05’, ‘2002-06-12’, ‘02:06:12, 'debit'),
