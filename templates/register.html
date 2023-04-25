@@ -1,26 +1,35 @@
 {% extends "header.html" %}
 
-{% block body %}
-
-<button type="button" class="btn btn-success">Customer</button>
-<button type="button" class="btn btn-primary">Airline Staff</button>
-
-<a href="/">Go back</a>
-
-{% endblock %}
-
-<!--<html>
+<!-- <html>
 <head>
 </head>
-<body>
+<body> -->
+<!-- for customers -->
+<!-- <a class="btn btn-primary" href="#" role="button">Customer Registration</a> -->
+<!-- <a class="btn btn-primary" href="#" role="button">Staff Registration</a> -->
+{% block body %}
 <form action="/registerAuth" method="POST">
-	<input type="text" name = "username" placeholder="username" required/> </br>
-	<input type="password" name = "password" placeholder="password" required/></br>
-	<input type="submit" value = Register />
-	{% if error %}
-		<p class="error"><strong>Error:</strong> {{error}}</p>
-	{% endif %}
+    <input type="email" class="form-control" name = "Email" placeholder="email" required/> </br>
+    <input type="password" class="form-control" name = "Password" placeholder="password" required/></br>
+    <input type="text" class="form-control" name = "FirstName" placeholder="first name" required/></br>
+    <input type="text" class="form-control" name = "LastName" placeholder="last name" required/></br>
+    <input type="text" class="form-control" name = "Building_num" placeholder="building number" required/></br>
+    <input type="text" class="form-control" name = "Street_name" placeholder="street name" required/></br>
+    <input type="text" class="form-control" name = "Apartment_num" placeholder="apartment num"/></br>
+    <input type="text" class="form-control" name = "City" placeholder="city" required/></br>
+    <input type="text" class="form-control" name = "State" placeholder="state" required/></br>
+    <input type="text" class="form-control" name = "Zip_code" placeholder="zip code" required/></br>
+    <input type="text" class="form-control" name = "Passport_num" placeholder="passport number" required/></br>
+    <input type="text" class="form-control" name = "Passport_expiration" placeholder="passport expiration (YYYY-MM-DD)" required/></br>
+    <input type="text" class="form-control" name = "Passport_country" placeholder="passport country" required/></br>
+    <input type="text" class="form-control" name = "Date_of_birth" placeholder="date_of_birth (YYYY-MM-DD)" required/></br>
+    <input type="submit" class="btn btn-primary" value = Register />
+    {% if error %}
+        <p class="error"><strong>Error:</strong> {{error}}</p>
+    {% endif %}
 </form>
 <a href="/">Go back</a>
-</body>
+{% endblock %}
+
+<!-- </body>
 </html> -->
