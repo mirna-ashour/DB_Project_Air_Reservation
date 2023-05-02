@@ -1,5 +1,5 @@
 #Import Flask Library
-from flask import Flask, render_template, request, session, url_for, redirect
+from flask import Flask, render_template, request, session, url_for, redirect, flash
 import pymysql.cursors
 
 #Initialize the app from Flask
@@ -52,7 +52,7 @@ def as_reg():
 
 #Authenticates the login for customer
 @app.route('/loginAuth_cust', methods=['GET', 'POST'])
-def loginAuth():
+def loginAuth_cust():
 	#grabs information from the forms
 	Email = request.form['Email']
 	Password = request.form['Password']
@@ -79,7 +79,7 @@ def loginAuth():
 
 #Authenticates the login for airline staff
 @app.route('/loginAuth_as', methods=['GET', 'POST'])
-def loginAuth():
+def loginAuth_as():
 	#grabs information from the forms
 	Username = request.form['Username']
 	Password = request.form['Password']
@@ -213,4 +213,4 @@ app.secret_key = 'some key that you will never guess'
 #debug = True -> you don't have to restart flask
 #for changes to go through, TURN OFF FOR PRODUCTION
 if __name__ == "__main__":
-	app.run('127.0.0.1', 4000, debug = True)
+	app.run('127.0.0.1', 5000, debug = True)
