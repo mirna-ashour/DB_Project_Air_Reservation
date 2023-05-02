@@ -24,34 +24,44 @@ def hello():
 def login():
 	return render_template('login.html')
 
+#Define route for customer login
+@app.route('/customer_login')
+def customer_login():
+	return render_template('customer_login.html')
+
+#Define route for login
+@app.route('/as_login')
+def as_login():
+	return render_template('as_login.html')
+
 #Define route for register
 @app.route('/register')
 def register():
 	return render_template('register.html')
 
-#Define route for customer_reg
+#Define route for customer registration
 @app.route('/customer_reg')
 def customer_reg():
 	return render_template('customer_reg.html')
 
-#Define route for customer_reg
+#Define route for airline staff registration
 @app.route('/as_reg')
 def as_reg():
 	return render_template('as_reg.html')
 
 
-#Authenticates the login
-@app.route('/loginAuth', methods=['GET', 'POST'])
+#Authenticates the login for customer
+@app.route('/loginAuth_cust', methods=['GET', 'POST'])
 def loginAuth():
 	#grabs information from the forms
-	username = request.form['username']
-	password = request.form['password']
+	Email = request.form['Email']
+	Password = request.form['Password']
 
 	#cursor used to send queries
 	cursor = conn.cursor()
 	#executes query
-	query = 'SELECT * FROM Customer WHERE email = %s and password = %s'
-	cursor.execute(query, (username, password))
+	query = 'SELECT * FROM Customer WHERE Email = %s and Password = %s'
+	cursor.execute(query, (Email, Password))
 	#stores the results in a variable
 	data = cursor.fetchone()
 	#use fetchall() if you are expecting more than 1 data row
@@ -60,7 +70,34 @@ def loginAuth():
 	if(data):
 		#creates a session for the the user
 		#session is a built in
-		session['username'] = data['FirstName']
+		session['Email'] = data['FirstName']
+		return redirect(url_for('home'))
+	else:
+		#returns an error message to the html page
+		error = 'Invalid login or username'
+		return render_template('login.html', error=error)
+
+#Authenticates the login for airline staff
+@app.route('/loginAuth_as', methods=['GET', 'POST'])
+def loginAuth():
+	#grabs information from the forms
+	Username = request.form['Username']
+	Password = request.form['Password']
+
+	#cursor used to send queries
+	cursor = conn.cursor()
+	#executes query
+	query = 'SELECT * FROM Airline_Staff WHERE Username = %s and Password = %s'
+	cursor.execute(query, (Username, Password))
+	#stores the results in a variable
+	data = cursor.fetchone()
+	#use fetchall() if you are expecting more than 1 data row
+	cursor.close()
+	error = None
+	if(data):
+		#creates a session for the the user
+		#session is a built in
+		session['Username'] = data['FirstName']
 		return redirect(url_for('home'))
 	else:
 		#returns an error message to the html page
@@ -176,4 +213,4 @@ app.secret_key = 'some key that you will never guess'
 #debug = True -> you don't have to restart flask
 #for changes to go through, TURN OFF FOR PRODUCTION
 if __name__ == "__main__":
-	app.run('127.0.0.1', 4000, debug = True)
+	app.run('127.0.0.1', 5000, debug = True)
