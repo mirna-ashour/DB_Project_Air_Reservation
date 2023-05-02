@@ -191,33 +191,32 @@ def home():
 @app.route('/customer_home')
 def customer_home():
     
-	email = None
-	if 'email' in session:
-		email = session['email']
+	Email = 'None'
+	if 'username' in session:
+		Email = session['Email']
 	cursor = conn.cursor()
-	query1 = 'SELECT * FROM Buys WHERE Email = %s'
-	# query1 = 'SELECT Ticket_ID FROM Buys'
-	cursor.execute(query1, (email))
-	data1 = cursor.fetchall()
-	# query2 = 'SELECT * From Ticket WHERE Ticket_ID = %s'
-	# cursor.execute(query2, (data1))
-	# data2 = cursor.fetchall()
+	query1 = 'SELECT Ticket_ID FROM Buys WHERE Email = %s'
+	cursor.execute(query1, (Email))
+	data1 = cursor.fetchone()
+	query2 = 'SELECT * From Ticket WHERE Ticket_ID = %s'
+	cursor.execute(query2, ('1'))
+	data2 = cursor.fetchall()
 	cursor.close()
-	return render_template('customer_home.html', email=email, flights=data1)
+	return render_template('customer_home.html', email=Email, flights=data2)
 		
-@app.route('/book', methods=['GET', 'POST'])
-def post():
-	cursor = conn.cursor()
-	source = request.form['source']
-	destination = request.form['destination']
-	depart = request.form['depart']
-	ret = request.form['return']
-	query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
-	cursor.execute(query, (source))
-	search = cursor.fetchall()
-	conn.commit()
-	cursor.close()
-	return redirect(url_for('home', search=search))
+# @app.route('/book', methods=['GET', 'POST'])
+# def post():
+# 	cursor = conn.cursor()
+# 	source = request.form['source']
+# 	destination = request.form['destination']
+# 	depart = request.form['depart']
+# 	ret = request.form['return']
+# 	query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
+# 	cursor.execute(query, (source))
+# 	search = cursor.fetchall()
+# 	conn.commit()
+# 	cursor.close()
+# 	return redirect(url_for('home', search=search))
 
 @app.route('/logout')
 def logout():
