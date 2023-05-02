@@ -71,7 +71,7 @@ def loginAuth_cust():
 		#creates a session for the the user
 		#session is a built in
 		session['Email'] = data['FirstName']
-		return redirect(url_for('home'))
+		return redirect(url_for('customer_home'))
 	else:
 		#returns an error message to the html page
 		error = 'Invalid login or username'
@@ -141,7 +141,7 @@ def registerAuth_cust():
         cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
         conn.commit()
         cursor.close()
-        return render_template('index.html')
+        return render_template('customer_home.html')
     
 #Authenticates the registration for airline staff
 @app.route('/registerAuth_as', methods=['GET', 'POST'])
@@ -172,7 +172,7 @@ def registerAuth_as():
         cursor.execute(ins, (Username, Airline_name, Password, First_name, Last_name, Date_of_birth))
         conn.commit()
         cursor.close()
-        return render_template('index.html')
+        return render_template('index.html')   # CHANGE
 
 
 @app.route('/home')
@@ -188,6 +188,22 @@ def home():
 	cursor.close()
 	return render_template('home.html', username=username, flights=data1)
 
+@app.route('/customer_home')
+def customer_home():
+    
+	email = None
+	if 'email' in session:
+		email = session['email']
+	cursor = conn.cursor()
+	query1 = 'SELECT * FROM Buys WHERE Email = %s'
+	# query1 = 'SELECT Ticket_ID FROM Buys'
+	cursor.execute(query1, (email))
+	data1 = cursor.fetchall()
+	# query2 = 'SELECT * From Ticket WHERE Ticket_ID = %s'
+	# cursor.execute(query2, (data1))
+	# data2 = cursor.fetchall()
+	cursor.close()
+	return render_template('customer_home.html', email=email, flights=data1)
 		
 @app.route('/book', methods=['GET', 'POST'])
 def post():
