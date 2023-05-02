@@ -10,7 +10,7 @@ conn = pymysql.connect(host='localhost',
 		               port = 8889,
                        user='root',
                        password='root',
-                       db='blog',
+                       db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
 
@@ -28,6 +28,17 @@ def login():
 @app.route('/register')
 def register():
 	return render_template('register.html')
+
+#Define route for customer_reg
+@app.route('/customer_reg')
+def customer_reg():
+	return render_template('customer_reg.html')
+
+#Define route for customer_reg
+@app.route('/as_reg')
+def as_reg():
+	return render_template('as_reg.html')
+
 
 #Authenticates the login
 @app.route('/loginAuth', methods=['GET', 'POST'])
@@ -56,9 +67,9 @@ def loginAuth():
 		error = 'Invalid login or username'
 		return render_template('login.html', error=error)
 
-#Authenticates the register
-@app.route('/registerAuth', methods=['GET', 'POST'])
-def registerAuth():
+#Authenticates the registration for customer
+@app.route('/registerAuth_cust', methods=['GET', 'POST'])
+def registerAuth_cust():
     #grabs information from the forms
     Email = request.form['Email']
     Password = request.form['Password']
@@ -87,10 +98,41 @@ def registerAuth():
     if(data):
         #If the previous query returns data, then user exists
         error = "This customer already exists"
-        return render_template('register.html', error = error)
+        return render_template('customer_reg.html', error = error)
     else:
         ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
         cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
+        conn.commit()
+        cursor.close()
+        return render_template('index.html')
+    
+#Authenticates the registration for airline staff
+@app.route('/registerAuth_as', methods=['GET', 'POST'])
+def registerAuth_as():
+    #grabs information from the forms
+    Username = request.form['Username']
+    Airline_name = request.form['Airline_name']
+    Password = request.form['Password']
+    First_name = request.form['First_name']
+    Last_name = request.form['Last_name']
+    Date_of_birth = request.form['Date_of_birth']
+
+    #cursor used to send queries
+    cursor = conn.cursor()
+    #executes query
+    query = 'SELECT * FROM Airline_Staff WHERE Username = %s and Airline_name = %s'
+    cursor.execute(query, (Username, Airline_name))
+    #stores the results in a variable
+    data = cursor.fetchone()
+    #use fetchall() if you are expecting more than 1 data row
+    error = None
+    if(data):
+        #If the previous query returns data, then user exists
+        error = "This airline staff member already exists"
+        return render_template('as_reg.html', error = error)
+    else:
+        ins = 'INSERT INTO Airline_Staff VALUES(%s, %s, %s, %s, %s, %s)'
+        cursor.execute(ins, (Username, Airline_name, Password, First_name, Last_name, Date_of_birth))
         conn.commit()
         cursor.close()
         return render_template('index.html')
@@ -134,4 +176,4 @@ app.secret_key = 'some key that you will never guess'
 #debug = True -> you don't have to restart flask
 #for changes to go through, TURN OFF FOR PRODUCTION
 if __name__ == "__main__":
-	app.run('127.0.0.1', 5000, debug = True)
+	app.run('127.0.0.1', 4000, debug = True)
