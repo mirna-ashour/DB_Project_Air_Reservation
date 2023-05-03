@@ -1,16 +1,9 @@
 {% extends "header.html" %}
 
 {% block body %}
-{% if username != None %}
-	<h1>Welcome, {{username}}</h1>
+{% if name != None %}
+	<h1>Welcome, {{name}}</h1>
 {% endif %}
-<form action="/book" method="POST">
-	<input type="text" class="form-control" name = "source" placeholder="From" required/> </br>
-	<input type="text" class="form-control" name = "destination" placeholder="To" required/> </br>
-	<input type="date" name = "depart" placeholder="Depart" required/> </br>
-	<input type="date" name = "return" placeholder="Return" required/> </br>
-	<input type="submit" value = "Search" />
-</form>
 
 <style type="text/css">
 	table, th, td{
@@ -31,20 +24,6 @@
 </table>
  
 <br>
-
-<table class = "table">
-	<th>Airline name</th>
-	<th>Flight Number</th>
-	<th>Departure Airport</th>
-
-{% for row in search %}
-	<tr>
-		<td>{{row['Airline_name']}}</td>
-		<td>{{row['Flight_num']}}</td>
-		<td>{{row['Name']}}</td>
-	</tr>
-{% endfor %}
-</table>
 
 <a href="/logout">Logout</a>
 
