@@ -126,24 +126,24 @@ def registerAuth_cust():
 	Date_of_birth = request.form['Date_of_birth']
 
     #cursor used to send queries
-    cursor = conn.cursor()
+	cursor = conn.cursor()
     #executes query
-    query = 'SELECT * FROM Customer WHERE Email = %s'
-    cursor.execute(query, (Email))
+	query = 'SELECT * FROM Customer WHERE Email = %s'
+	cursor.execute(query, (Email))
     #stores the results in a variable
-    data = cursor.fetchone()
+	data = cursor.fetchone()
     #use fetchall() if you are expecting more than 1 data row
-    error = None
-    if(data):
+	error = None
+	if(data):
         #If the previous query returns data, then user exists
-        error = "This customer already exists"
-        return render_template('cus_reg.html', error = error)
-    else:
-        ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-        cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
-        conn.commit()
-        cursor.close()
-        return render_template('cus_home.html')
+		error = "This customer already exists"
+		return render_template('cus_reg.html', error = error)
+	else:
+		ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+		cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
+		conn.commit()
+		cursor.close()
+		return render_template('cus_home.html')
     
 #Authenticates the registration for airline staff
 @app.route('/registerAuth_as', methods=['GET', 'POST'])
@@ -208,6 +208,46 @@ def search():
 	cursor.close()
 	return redirect(url_for('cus_home', search=data))
 
+#NEEDS AIRPLANE_ID, WILL ASK NISHA FOR HOW SHE UPDATED THE FLIGHTS TABLE BC I CAN'T SEE IT - Olivia
+"""
+@app.route('/create_flight') 
+def create_flight():
+	departure = request.form['departure']
+	arrival = request.form['arrival'] 
+	flightNum = request.form['flightNum']
+	airplaneID = request.form['airplane']
+	departDate = request.form['departDate'] 
+	departTime = request.form['departTime'] 
+	arriveDate = request.form['arriveDate'] 
+	arriveTime = request.form['arriveTime'] 
+	basePrice = request.form['basePrice']
+	status = "on-time"
+
+	cursor = conn.cursor()
+
+	username = session['uid']
+	query = 'SELECT airline_name FROM works WHERE username=%s'
+	cursor.execute(query, (username))
+	data = cursor.fetchone()
+	airline=data['airline_name']
+
+	#validating airplane number (with the airline it belongs to)
+	query = 'SELECT * FROM Airplane WHERE Airplane_ID = %s and Airline_name = %s'
+	cursor.execute(query, (airplaneID, airline))
+	data2 = cursor.fetchone()
+	error = None
+	if(data2):
+		#airplane exists and with the correct airline
+		query = 'INSERT INTO Flight VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+		values = (airline, flightNum, departTime, departDate, arriveTime, arriveDate, departure, arrival, basePrice, status)
+		cursor.execute(query, values)
+		conn.commit()
+		cursor.close()
+		return render_template('staff/create_flight.html')
+	else:
+		error = 'This airplane does not exist with your airline'
+		return render_template('create_flight.html', error=error)
+"""
 
 @app.route('/logout')
 def logout():
