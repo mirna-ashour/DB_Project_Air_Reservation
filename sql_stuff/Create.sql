@@ -81,6 +81,7 @@ CREATE TABLE Flight (
 	Arrival_date		date NOT NULL, 
 	Departure_airport_ID int NOT NULL,
 	Arrival_airport_ID       int NOT NULL,
+	Airplane_ID 	int NOT NULL,
 	Base_ticket_price	int NOT NULL,
 	Status			varchar(255) NOT NULL,
 	FOREIGN KEY (Airline_name) REFERENCES Airline(Name),

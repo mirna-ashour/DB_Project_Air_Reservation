@@ -19,35 +19,24 @@ conn = pymysql.connect(host='localhost',
 def hello():
 	return render_template('index.html')
 
-#Define route for login
+
+								##################################### LOGIN AND REGISTRATION CODE ##############################################
+
+#General login page route
 @app.route('/login')
 def login():
 	return render_template('login.html')
 
-#Define route for customer login
+#Logout function route
+@app.route('/logout')
+def logout():
+	session.pop('username')
+	return redirect('/')
+
+#Customer login route
 @app.route('/cus_login')
 def cus_login():
 	return render_template('cus_login.html')
-
-#Define route for login
-@app.route('/as_login')
-def as_login():
-	return render_template('as_login.html')
-
-#Define route for register
-@app.route('/register')
-def register():
-	return render_template('register.html')
-
-#Define route for customer registration
-@app.route('/cus_reg')
-def cus_reg():
-	return render_template('cus_reg.html')
-
-#Define route for airline staff registration
-@app.route('/as_reg')
-def as_reg():
-	return render_template('as_reg.html')
 
 #Authenticates the login for customer
 @app.route('/loginAuth_cus', methods=['GET', 'POST'])
@@ -77,6 +66,12 @@ def loginAuth_cus():
 		error = 'Invalid login or username'
 		return render_template('login.html', error=error)
 
+#Airline staff login route
+@app.route('/as_login')
+def as_login():
+	return render_template('as_login.html')
+
+
 #Authenticates the login for airline staff
 @app.route('/loginAuth_as', methods=['GET', 'POST'])
 def loginAuth_as():
@@ -105,6 +100,19 @@ def loginAuth_as():
 		#returns an error message to the html page
 		error = 'Invalid login or username'
 		return render_template('login.html', error=error)
+
+
+
+
+#General regsiter page
+@app.route('/register')
+def register():
+	return render_template('register.html')
+
+#Customer registration route
+@app.route('/cus_reg')
+def cus_reg():
+	return render_template('cus_reg.html')
 
 #Authenticates the registration for customer
 @app.route('/registerAuth_cus', methods=['GET', 'POST'])
@@ -145,7 +153,15 @@ def registerAuth_cus():
 		cursor.close()
 		error = "You have been successfully registered! Please login now."
 		return render_template('cus_login.html', error=error)
-    
+
+
+
+
+#Airline staff registration route
+@app.route('/as_reg')
+def as_reg():
+	return render_template('as_reg.html')
+
 #Authenticates the registration for airline staff
 @app.route('/registerAuth_as', methods=['GET', 'POST'])
 def registerAuth_as():
@@ -177,6 +193,11 @@ def registerAuth_as():
 		cursor.close()
 		return render_template('index.html')   # CHANGE
 
+
+	
+									######################################## CUSTOMER CODE ################################################
+
+#General home page for customers
 @app.route('/cus_home')
 def cus_home():
 	email = 'None'
@@ -191,7 +212,8 @@ def cus_home():
 	data2 = cursor.fetchone()
 	cursor.close()
 	return render_template('cus_home.html', firstname=data2, flights=data)#, search=request.args.get('search')
-		
+
+#Search for flights for customers	
 @app.route('/search')
 def search():
 	cursor = conn.cursor()
@@ -209,10 +231,50 @@ def search():
 	cursor.close()
 	return redirect(url_for('cus_home', search=data))
 
-#NEEDS AIRPLANE_ID, WILL ASK NISHA FOR HOW SHE UPDATED THE FLIGHTS TABLE BC I CAN'T SEE IT - Olivia
-"""
-@app.route('/create_flight') 
-def create_flight():
+# @app.route('/book', methods=['GET', 'POST'])
+# def post():
+# 	cursor = conn.cursor()
+# 	source = request.form['source']
+# 	destination = request.form['destination']
+# 	depart = request.form['depart']
+# 	ret = request.form['return']
+# 	query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
+# 	cursor.execute(query, (source))
+# 	search = cursor.fetchall()
+# 	conn.commit()
+# 	cursor.close()
+# 	return redirect(url_for('home', search=search))
+
+								######################################### AIRLINE STAFF CODE #############################################
+
+#Airline staff home page
+@app.route('/as_home', methods=['GET', 'POST'])
+def as_home():
+
+	name = None
+	if 'firstName' in session:
+		print(session['firstName'])
+		name = session['firstName']
+		
+	return render_template('as_home.html', name=name)
+
+#AS view flights form 
+@app.route('/staff/view_flights', methods=['GET', 'POST'])
+def view_flights():
+	return render_template('staff/view_flights.html')
+
+#AS view flights form authentication 
+
+	#MISSING. NOT YET CREATED ^^
+
+#AS create flight form 
+@app.route('/staff/create_flight') 
+def create_flights():
+	return render_template('staff/create_flight.html')
+
+#AS create flight form authentication 
+@app.route('/staff/create_flight_auth', methods=['GET', 'POST']) 
+def create_flight_auth():
 	departure = request.form['departure']
 	arrival = request.form['arrival'] 
 	flightNum = request.form['flightNum']
@@ -223,14 +285,9 @@ def create_flight():
 	arriveTime = request.form['arriveTime'] 
 	basePrice = request.form['basePrice']
 	status = "on-time"
+	airline = session['airline']
 
 	cursor = conn.cursor()
-
-	username = session['uid']
-	query = 'SELECT airline_name FROM works WHERE username=%s'
-	cursor.execute(query, (username))
-	data = cursor.fetchone()
-	airline=data['airline_name']
 
 	#validating airplane number (with the airline it belongs to)
 	query = 'SELECT * FROM Airplane WHERE Airplane_ID = %s and Airline_name = %s'
@@ -240,15 +297,111 @@ def create_flight():
 	if(data2):
 		#airplane exists and with the correct airline
 		query = 'INSERT INTO Flight VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-		values = (airline, flightNum, departTime, departDate, arriveTime, arriveDate, departure, arrival, basePrice, status)
+		values = (airline, flightNum, departTime, departDate, arriveTime, arriveDate, airplaneID, departure, arrival, basePrice, status)
 		cursor.execute(query, values)
 		conn.commit()
 		cursor.close()
 		return render_template('staff/create_flight.html')
 	else:
-		error = 'This airplane does not exist with your airline'
-		return render_template('create_flight.html', error=error)
-"""
+		error = 'This airplane does not exist with your airline.'
+		return render_template('staff/create_flight.html', error=error)
+
+@app.route('/staff/change_status')
+def change_status():
+	return render_template('staff/change_status.html')
+
+@app.route('/staff/change_status_auth', methods=['GET', 'POST'])
+def change_status_auth():
+	flightNum = request.form['flightNum']
+	airline = request.form['airlineName']
+	departDate = request.form['departDate']
+	departTime = request.form['departTime']
+	statusUpdate = request.form['newStatus']
+
+	cursor = conn.cursor()
+	query = 'UPDATE Flight SET Status = %s WHERE Flight_num = %s AND Airline_name = %s AND Departure_date = %s AND Departure_time = %s'
+	values = (statusUpdate, flightNum, airline, departDate, departTime)
+	cursor.execute(query, values)
+	conn.commit()
+	cursor.close()
+	return render_template('staff/change_status.html')
+
+@app.route('/staff/add_airplane')
+def add_airplane():
+	return render_template('staff/add_airplane.html')
+
+@app.route('/staff/add_airplane_auth', methods=['GET', 'POST'])
+def add_airplane_auth():
+	cursor = conn.cursor()
+
+	username = session['uid']
+	query = 'SELECT Airline_name FROM Airline_Staff WHERE Username=%s'
+	cursor.execute(query, (username))
+	data = cursor.fetchone()
+	airline = data['Airline_name'] #!!!!
+
+	numOfSeats = request.form['numOfSeats']
+	manufactureDate = request.form['manufactureDate']
+	manufacturer = request.form['manufacturer']
+	age = request.form['age'] #maybe we should do a function that calculates this?
+
+	query = 'INSERT INTO Airplane VALUES(%s, %s, %s, %s, %s)'
+	values = (airline, numOfSeats, manufacturer, manufactureDate, age)
+	cursor.execute(query, values)
+	conn.commit()
+	cursor.close()
+	return render_template('staff/add_airplane.html')
+
+@app.route('/staff/add_airport')
+def add_airport():
+	return render_template('staff/add_airport.html')
+
+@app.route('/staff/add_airport_auth', methods=['GET', 'POST'])
+def add_airport_auth():
+	name = request.form['name']
+	city = request.form['city']
+	country = request.form['country']
+	ap_type = request.form['ap_type']
+
+	cursor = conn.cursor()
+	query = 'INSERT INTO Airport VALUES(%s, %s, %s, %s)'
+	values =(name, city, country, ap_type)
+	cursor.execute(query, values)
+	conn.commit()
+	cursor.close()
+	return render_template('staff/add_airport.html')
+
+@app.route('/staff/flight_ratings')
+def flight_ratings():
+	return render_template('staff/flight_ratings.html')
+
+@app.route('/staff/flight_ratings_auth', methods=['GET', 'POST'])
+def flight_ratings_auth():
+	return render_template('staff/flight_ratings.html')
+
+@app.route('/staff/freq_cust')
+def freq_cust():
+	return render_template('staff/freq_cust.html')
+
+@app.route('/staff/freq_cust_auth', methods=['GET', 'POST'])
+def freq_cust_auth():
+	return render_template('staff/freq_cust.html')
+
+@app.route('/staff/reports')
+def reports():
+	return render_template('staff/reports.html')
+
+@app.route('/staff/reports_auth', methods=['GET', 'POST'])
+def reports_auth():
+	return render_template('staff/reports.html')
+
+@app.route('/staff/revenue')
+def revenue():
+	return render_template('staff/revenue.html')
+
+@app.route('/staff/revenue_auth', methods=['GET', 'POST'])
+def revenue_auth():
+	return render_template('staff/revenue.html')
 
 """
 @app.route('/change_status', methods=['GET', 'POST'])
@@ -307,91 +460,6 @@ def add_airplane():
 	cursor.close()
 	return redirect(url_for('staff/add_airplane'))
 """
-
-@app.route('/as_home', methods=['GET', 'POST'])
-def as_home():
-
-	name = None
-	if 'firstName' in session:
-		print(session['firstName'])
-		name = session['firstName']
-		
-	return render_template('as_home.html', name=name)
-
-@app.route('/staff/view_flights', methods=['GET', 'POST'])
-def view_flights():
-	return render_template('staff/view_flights.html')
-
-@app.route('/staff/create_flight', methods=['GET', 'POST'])
-def create_flight():
-	# departure = request.form['departure']
-	# arrival = request.form['arrival'] 
-	# flightNum = request.form['flightNum'] 
-	# airplaneID = request.form['airplane'] 	# needs validation
-	# departDate = request.form['departDate'] 
-	# departTime = request.form['departTime'] 
-	# arriveDate = request.form['arriveDate'] 
-	# arriveTime = request.form['arriveTime'] 
-	# basePrice = request.form['basePrice'] 
-
-	# status = "on-time"
-	# cursor = conn.cursor()
-	
-
-	query = 'INSERT INTO flight VALUES()'
-	# params = ( )
-	# print(values)
-	# cursor.execute(query, params)
-	# conn.commit()
-	# cursor.close()
-	return render_template('staff/create_flight.html')
-
-@app.route('/staff/change_status', methods=['GET', 'POST'])
-def change_status():
-	return render_template('staff/change_status.html')
-
-@app.route('/staff/add_airplane', methods=['GET', 'POST'])
-def add_airplane():
-	return render_template('staff/add_airplane.html')
-
-@app.route('/staff/add_airport', methods=['GET', 'POST'])
-def add_airport():
-	return render_template('staff/add_airport.html')
-
-@app.route('/staff/flight_ratings', methods=['GET', 'POST'])
-def flight_ratings():
-	return render_template('staff/flight_ratings.html')
-
-@app.route('/staff/freq_cust', methods=['GET', 'POST'])
-def freq_cust():
-	return render_template('staff/freq_cust.html')
-
-@app.route('/staff/reports', methods=['GET', 'POST'])
-def reports():
-	return render_template('staff/reports.html')
-
-@app.route('/staff/revenue', methods=['GET', 'POST'])
-def revenue():
-	return render_template('staff/revenue.html')
-		
-# @app.route('/book', methods=['GET', 'POST'])
-# def post():
-# 	cursor = conn.cursor()
-# 	source = request.form['source']
-# 	destination = request.form['destination']
-# 	depart = request.form['depart']
-# 	ret = request.form['return']
-# 	query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
-# 	cursor.execute(query, (source))
-# 	search = cursor.fetchall()
-# 	conn.commit()
-# 	cursor.close()
-# 	return redirect(url_for('home', search=search))
-
-@app.route('/logout')
-def logout():
-	session.pop('username')
-	return redirect('/')
 		
 app.secret_key = 'some key that you will never guess'
 #Run the app on localhost port 5000
