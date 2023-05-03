@@ -208,6 +208,81 @@ def search():
 	cursor.close()
 	return redirect(url_for('cus_home', search=data))
 
+#NEEDS AIRPLANE_ID, WILL ASK NISHA FOR HOW SHE UPDATED THE FLIGHTS TABLE BC I CAN'T SEE IT - Olivia
+"""
+@app.route('/create_flight') 
+def create_flight():
+	departure = request.form['departure']
+	arrival = request.form['arrival'] 
+	flightNum = request.form['flightNum']
+	airplaneID = request.form['airplane']
+	departDate = request.form['departDate'] 
+	departTime = request.form['departTime'] 
+	arriveDate = request.form['arriveDate'] 
+	arriveTime = request.form['arriveTime'] 
+	basePrice = request.form['basePrice']
+	status = "on-time"
+
+	cursor = conn.cursor()
+
+	username = session['uid']
+	query = 'SELECT airline_name FROM works WHERE username=%s'
+	cursor.execute(query, (username))
+	data = cursor.fetchone()
+	airline=data['airline_name']
+
+	#validating airplane number (with the airline it belongs to)
+	query = 'SELECT * FROM Airplane WHERE Airplane_ID = %s and Airline_name = %s'
+	cursor.execute(query, (airplaneID, airline))
+	data2 = cursor.fetchone()
+	error = None
+	if(data2):
+		#airplane exists and with the correct airline
+		query = 'INSERT INTO Flight VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+		values = (airline, flightNum, departTime, departDate, arriveTime, arriveDate, departure, arrival, basePrice, status)
+		cursor.execute(query, values)
+		conn.commit()
+		cursor.close()
+		return render_template('staff/create_flight.html')
+	else:
+		error = 'This airplane does not exist with your airline'
+		return render_template('create_flight.html', error=error)
+"""
+
+"""
+@app.route('/change_status', methods=['GET', 'POST'])
+def change_status():
+	flightNum = request.form['flightNum']
+	airline = request.form['airlineName']
+	departDate = request.form['departDate']
+	departTime = request.form['departTime']
+	statusUpdate = request.form['newStatus']
+
+	cursor = conn.cursor()
+	query = 'UPDATE Flight SET Status = %s WHERE Flight_num = %s AND Airline_name = %s AND Departure_date = %s AND Departure_time = %s'
+	values = (statusUpdate, flightNum, airline, departDate, departTime)
+	cursor.execute(query, values)
+	conn.commit()
+	cursor.close()
+	return redirect(url_for('staff/change_status'))
+"""
+
+"""
+@app.route('/staff/add_airport', methods=['GET', 'POST'])
+def add_airport():
+	name = request.form['name']
+	city = request.form['city']
+	country = request.form['country']
+	ap_type = request.form['ap_type']
+
+	cursor = conn.cursor()
+	query = 'INSERT INTO Airport VALUES(%s, %s, %s, %s)'
+	values =(name, city, country, ap_type)
+	cursor.execute(query, values)
+	conn.commit()
+	cursor.close()
+	return redirect(url_for('staff/add_airport'))
+"""
 
 @app.route('/as_home.html', methods=['GET', 'POST'])
 def as_home():

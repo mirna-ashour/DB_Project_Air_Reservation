@@ -1,0 +1,16 @@
+{% extends "header.html" %}
+
+{% block body %}
+
+<form action="/staff/change_status" method="POST" class="col-3">
+    <input type="text" class="form-control" name = "flightNum" placeholder="Flight Number" required/> </br>
+    <input type="text" class="form-control" name = "airlineName" placeholder="Airline" required/> </br>
+
+    <input type="date" class="form-control" name = "departDate" placeholder="Departure Date" required/> </br>
+    <input type="time" class="form-control" name = "departTime" placeholder="Departure Time" required/> </br>
+
+    <input type="text" class="form-control" name = "newStatus" placeholder="Status Update" required/> </br>
+    <input class="btn btn-primary" type="submit" value = "Update" />
+</form>
+
+{% endblock %}

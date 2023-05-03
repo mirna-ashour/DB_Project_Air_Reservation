@@ -44,18 +44,20 @@
 	<input type="submit" value = "Search" />
 </form>
 <!-- <br> -->
-<table class = "table">
-	<th>Airline name</th>
-	<th>Flight Number</th>
-	<!-- <th>Departure Airport</th> -->
-{% for row in search %}
-	<tr>
-		<td>{{row['Airline_name']}}</td>
-		<td>{{row['Flight_num']}}</td>
-		<!-- <td>{{row['Name']}}</td> -->
-	</tr>
-{% endfor %}
-</table>
+{% if firstname != None %}
+	<table class = "table">
+		<th>Airline name</th>
+		<th>Flight Number</th>
+		<!-- <th>Departure Airport</th> -->
+	{% for row in search %}
+		<tr>
+			<td>{{row['Airline_name']}}</td>
+			<td>{{row['Flight_num']}}</td>
+			<!-- <td>{{row['Name']}}</td> -->
+		</tr>
+	{% endfor %}
+	</table>
+{% endif %}
 
 <a href="/logout">Logout</a>
 
