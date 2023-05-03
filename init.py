@@ -71,6 +71,7 @@ def loginAuth_cust():
 		#creates a session for the the user
 		#session is a built in
 		session['Email'] = data['FirstName']
+		session['type'] = "cust"
 		return redirect(url_for('customer_home'))
 	else:
 		#returns an error message to the html page
@@ -96,10 +97,10 @@ def loginAuth_as():
 	error = None
 	if(data):
 		#creates a session for the the user
-		#session is a built in
-		print("HI IT WORKED")
 		session['username'] = data['Username']
 		session['firstName'] = data['First_name']
+		session['airline'] = data['Airline_name']
+		session['type'] = "staff"
 		return redirect(url_for('as_home'))
 	else:
 		#returns an error message to the html page
@@ -222,6 +223,26 @@ def view_flights():
 
 @app.route('/staff/create_flight', methods=['GET', 'POST'])
 def create_flight():
+	# departure = request.form['departure']
+	# arrival = request.form['arrival'] 
+	# flightNum = request.form['flightNum'] 
+	# airplaneID = request.form['airplane'] 	# needs validation
+	# departDate = request.form['departDate'] 
+	# departTime = request.form['departTime'] 
+	# arriveDate = request.form['arriveDate'] 
+	# arriveTime = request.form['arriveTime'] 
+	# basePrice = request.form['basePrice'] 
+
+	# status = "on-time"
+	# cursor = conn.cursor()
+	
+
+	query = 'INSERT INTO flight VALUES()'
+	# params = ( )
+	# print(values)
+	# cursor.execute(query, params)
+	# conn.commit()
+	# cursor.close()
 	return render_template('staff/create_flight.html')
 
 @app.route('/staff/change_status', methods=['GET', 'POST'])
