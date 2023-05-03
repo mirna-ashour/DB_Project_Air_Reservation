@@ -275,7 +275,7 @@ def create_flights():
 	return render_template('staff/create_flight.html')
 
 #AS create flight form authentication 
-@app.route('/staff/create_flight_auth', methods=['GET', 'POST']) 
+@app.route('/create_flight_auth', methods=['GET', 'POST']) 
 def create_flight_auth():
 	departure = request.form['departure']
 	arrival = request.form['arrival'] 
@@ -312,7 +312,7 @@ def create_flight_auth():
 def change_status():
 	return render_template('staff/change_status.html')
 
-@app.route('/staff/change_status_auth', methods=['GET', 'POST'])
+@app.route('/change_status_auth', methods=['GET', 'POST'])
 def change_status_auth():
 	flightNum = request.form['flightNum']
 	airline = request.form['airlineName']
@@ -332,15 +332,17 @@ def change_status_auth():
 def add_airplane():
 	return render_template('staff/add_airplane.html')
 
-@app.route('/staff/add_airplane_auth', methods=['GET', 'POST'])
+@app.route('/add_airplane_auth', methods=['GET', 'POST'])
 def add_airplane_auth():
 	cursor = conn.cursor()
 
-	username = session['uid']
-	query = 'SELECT Airline_name FROM Airline_Staff WHERE Username=%s'
-	cursor.execute(query, (username))
-	data = cursor.fetchone()
-	airline = data['Airline_name'] #!!!!
+			#we dont need to do this. The staff's airline gets stored in the session when they log in
+	# username = session['uid']
+	# query = 'SELECT Airline_name FROM Airline_Staff WHERE Username=%s'
+	# cursor.execute(query, (username))
+	# data = cursor.fetchone()
+	# airline = data['Airline_name'] #!!!!
+	airlline = session['airline']
 
 	numOfSeats = request.form['numOfSeats']
 	manufactureDate = request.form['manufactureDate']
@@ -358,7 +360,7 @@ def add_airplane_auth():
 def add_airport():
 	return render_template('staff/add_airport.html')
 
-@app.route('/staff/add_airport_auth', methods=['GET', 'POST'])
+@app.route('/add_airport_auth', methods=['GET', 'POST'])
 def add_airport_auth():
 	name = request.form['name']
 	city = request.form['city']
@@ -377,7 +379,7 @@ def add_airport_auth():
 def flight_ratings():
 	return render_template('staff/flight_ratings.html')
 
-@app.route('/staff/flight_ratings_auth', methods=['GET', 'POST'])
+@app.route('/flight_ratings_auth', methods=['GET', 'POST'])
 def flight_ratings_auth():
 	return render_template('staff/flight_ratings.html')
 
@@ -385,7 +387,7 @@ def flight_ratings_auth():
 def freq_cust():
 	return render_template('staff/freq_cust.html')
 
-@app.route('/staff/freq_cust_auth', methods=['GET', 'POST'])
+@app.route('/freq_cust_auth', methods=['GET', 'POST'])
 def freq_cust_auth():
 	return render_template('staff/freq_cust.html')
 
@@ -393,15 +395,15 @@ def freq_cust_auth():
 def reports():
 	return render_template('staff/reports.html')
 
-@app.route('/staff/reports_auth', methods=['GET', 'POST'])
+@app.route('/reports_auth', methods=['GET', 'POST'])
 def reports_auth():
 	return render_template('staff/reports.html')
 
-@app.route('/staff/revenue')
+@app.route('/revenue')
 def revenue():
 	return render_template('staff/revenue.html')
 
-@app.route('/staff/revenue_auth', methods=['GET', 'POST'])
+@app.route('/revenue_auth', methods=['GET', 'POST'])
 def revenue_auth():
 	return render_template('staff/revenue.html')
 
