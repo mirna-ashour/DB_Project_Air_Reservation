@@ -37,4 +37,4 @@ Purchase_date, Purchase_time, Card_type) VALUES
 
 ('Jet Blue', 9353, '03:19:03', '2023-03-22', 'Nisha', 'Ramanna', '2002-10-20', 2453489, 'Nisha Ramanna',  '2023-03-22', '2021-06-04', '21:16:04', 'debit');
 
-INSERT INTO Buys VALUES (1, 'nisha@nyu.edu')
+INSERT INTO Buys VALUES (1, 'nisha@nyu.edu'), (3, 'nisha@nyu.edu');

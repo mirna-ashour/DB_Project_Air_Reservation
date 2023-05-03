@@ -25,9 +25,9 @@ def login():
 	return render_template('login.html')
 
 #Define route for customer login
-@app.route('/customer_login')
-def customer_login():
-	return render_template('customer_login.html')
+@app.route('/cus_login')
+def cus_login():
+	return render_template('cus_login.html')
 
 #Define route for login
 @app.route('/as_login')
@@ -40,18 +40,17 @@ def register():
 	return render_template('register.html')
 
 #Define route for customer registration
-@app.route('/customer_reg')
-def customer_reg():
-	return render_template('customer_reg.html')
+@app.route('/cus_reg')
+def cus_reg():
+	return render_template('cus_reg.html')
 
 #Define route for airline staff registration
 @app.route('/as_reg')
 def as_reg():
 	return render_template('as_reg.html')
 
-
 #Authenticates the login for customer
-@app.route('/loginAuth_cust', methods=['GET', 'POST'])
+@app.route('/loginAuth_cus', methods=['GET', 'POST'])
 def loginAuth_cust():
 	#grabs information from the forms
 	Email = request.form['Email']
@@ -70,8 +69,8 @@ def loginAuth_cust():
 	if(data):
 		#creates a session for the the user
 		#session is a built in
-		session['Email'] = data['FirstName']
-		return redirect(url_for('customer_home'))
+		session['Email'] = Email
+		return redirect(url_for('cus_home'))
 	else:
 		#returns an error message to the html page
 		error = 'Invalid login or username'
@@ -105,7 +104,7 @@ def loginAuth_as():
 		return render_template('login.html', error=error)
 
 #Authenticates the registration for customer
-@app.route('/registerAuth_cust', methods=['GET', 'POST'])
+@app.route('/registerAuth_cus', methods=['GET', 'POST'])
 def registerAuth_cust():
     #grabs information from the forms
     Email = request.form['Email']
@@ -135,13 +134,13 @@ def registerAuth_cust():
     if(data):
         #If the previous query returns data, then user exists
         error = "This customer already exists"
-        return render_template('customer_reg.html', error = error)
+        return render_template('cus_reg.html', error = error)
     else:
         ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
         cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
         conn.commit()
         cursor.close()
-        return render_template('customer_home.html')
+        return render_template('cus_home.html')
     
 #Authenticates the registration for airline staff
 @app.route('/registerAuth_as', methods=['GET', 'POST'])
@@ -174,49 +173,37 @@ def registerAuth_as():
         cursor.close()
         return render_template('index.html')   # CHANGE
 
-
-@app.route('/home')
-def home():
-    
-	username = None
-	if 'username' in session:
-		username = session['username']
+@app.route('/cus_home')
+def cus_home():
+	email = 'None'
+	if 'Email' in session:
+		email = session['Email']
 	cursor = conn.cursor()
+	query = 'SELECT * From Ticket WHERE Ticket_ID in (SELECT Ticket_ID FROM Buys WHERE Email = %s)'
+	cursor.execute(query, (email))
+	data = cursor.fetchall()
+	query2 = 'SELECT FirstName From Customer WHERE Email = %s'
+	cursor.execute(query2, (email))
+	data2 = cursor.fetchone()
+	cursor.close()
+	return render_template('cus_home.html', firstname=data2, flights=data, search=request.args.get('search'))
+
+@app.route('/search')
+def search():
+	cursor = conn.cursor()
+	source = request.form['source']
+	# destination = request.form['destination']
+	# depart = request.form['depart']
+	# ret = request.form['return']
+	# query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
+	# query = 'SELECT * FROM Flight WHERE Departure_airport_ID in (SELECT Airport_ID FROM Airport WHERE Name = %s) AND Arrival_airport_ID in (SELECT Airport_ID FROM Airport WHERE Name = %s)'
+	# query = 'SELECT * FROM (Flight as F JOIN Airport as A ON F.Departure_airport_ID = A.Airport_ID) WHERE Name = %s'
 	query = 'SELECT * FROM Flight'
 	cursor.execute(query)
-	data1 = cursor.fetchall() 
+	data = cursor.fetchall()
+	conn.commit()
 	cursor.close()
-	return render_template('home.html', username=username, flights=data1)
-
-@app.route('/customer_home')
-def customer_home():
-    
-	Email = 'None'
-	if 'username' in session:
-		Email = session['Email']
-	cursor = conn.cursor()
-	query1 = 'SELECT Ticket_ID FROM Buys WHERE Email = %s'
-	cursor.execute(query1, (Email))
-	data1 = cursor.fetchone()
-	query2 = 'SELECT * From Ticket WHERE Ticket_ID = %s'
-	cursor.execute(query2, ('1'))
-	data2 = cursor.fetchall()
-	cursor.close()
-	return render_template('customer_home.html', email=Email, flights=data2)
-		
-# @app.route('/book', methods=['GET', 'POST'])
-# def post():
-# 	cursor = conn.cursor()
-# 	source = request.form['source']
-# 	destination = request.form['destination']
-# 	depart = request.form['depart']
-# 	ret = request.form['return']
-# 	query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
-# 	cursor.execute(query, (source))
-# 	search = cursor.fetchall()
-# 	conn.commit()
-# 	cursor.close()
-# 	return redirect(url_for('home', search=search))
+	return redirect(url_for('cus_home', search=data))
 
 @app.route('/logout')
 def logout():

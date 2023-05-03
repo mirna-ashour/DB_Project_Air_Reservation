@@ -1,0 +1,62 @@
+{% extends "header.html" %}
+
+{% block body %}
+{% if firstname != None %}
+	<h1>Welcome, {{firstname['FirstName']}}</h1>
+{% endif %}
+
+<style type="text/css">
+	table, th, td{
+		border: 1px solid black;
+	}
+</style>
+
+<h2>View Your Flights</h2>
+<table class = "table">
+	<th>Airline Name</th>
+	<th>Flight Number</th>
+    <th>Departure Time</th>
+    <th>Departure Date</th>
+    <!-- <th>Arrival Time</th>
+    <th>Arrival Date</th>
+    <th>Departure Airport ID</th>
+    <th>Arrival Airport ID</th> -->
+{% for row in flights %}
+	<tr>
+		<td>{{row['Airline_name']}}</td>
+		<td>{{row['Flight_num']}}</td>
+        <td>{{row['Departure_time']}}</td>
+        <td>{{row['Departure_date']}}</td>
+        <!-- <td>{{row['Arrival_time']}}</td>
+        <td>{{row['Arrival_date']}}</td>
+        <td>{{row['Departure_airport_ID']}}</td>
+        <td>{{row['Arrival_airport_ID']}}</td> -->
+	</tr>
+{% endfor %}
+</table>
+
+<h2>Search For Flights</h2>
+<form action="/search">
+	<input type="text" class="form-control" name = "source" placeholder="From" required/> </br>
+	<!-- <input type="text" class="form-control" name = "destination" placeholder="To" required/> </br> -->
+	<!-- <input type="date" name = "depart" placeholder="Depart" required/> </br>
+	<input type="date" name = "return" placeholder="Return" required/> </br> -->
+	<input type="submit" value = "Search" />
+</form>
+<!-- <br> -->
+<table class = "table">
+	<th>Airline name</th>
+	<th>Flight Number</th>
+	<!-- <th>Departure Airport</th> -->
+{% for row in search %}
+	<tr>
+		<td>{{row['Airline_name']}}</td>
+		<td>{{row['Flight_num']}}</td>
+		<!-- <td>{{row['Name']}}</td> -->
+	</tr>
+{% endfor %}
+</table>
+
+<a href="/logout">Logout</a>
+
+{% endblock %}
