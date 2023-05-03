@@ -2,28 +2,20 @@
 
 {% block body %}
 {% if name != None %}
-	<h1>Welcome, {{name}}</h1>
+	<h2>Welcome, {{name}}</h2>
 {% endif %}
-
-<style type="text/css">
-	table, th, td{
-		border: 1px solid black;
-	}
-</style>
-
-<table class = "table">
-	<th>Airline name</th>
-	<th>Flight Number</th>
-
-{% for row in flights %}
-	<tr>
-		<td>{{row['Airline_name']}}</td>
-		<td>{{row['Flight_num']}}</td>
-	</tr>
-{% endfor %}
-</table>
+<br><br>
+<a>View flights</a><br><br>
+<a>Create new flights</a><br><br>
+<a>Change status of flights</a><br><br>
+<a>Add airplane in the system</a><br><br>
+<a>Add new airport in the system</a><br><br>
+<a>View flight ratings</a><br><br>
+<a>View frequent customers</a><br><br>
+<a>View reports</a><br><br>
+<a>View earned revenue</a><br><br>
  
-<br>
+<br><br>
 
 <a href="/logout">Logout</a>
 
