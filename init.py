@@ -97,9 +97,10 @@ def loginAuth_as():
 	if(data):
 		#creates a session for the the user
 		#session is a built in
+		print("HI IT WORKED")
 		session['username'] = data['Username']
 		session['firstName'] = data['First_name']
-		return render_template('as_home.html')
+		return redirect(url_for('as_home'))
 	else:
 		#returns an error message to the html page
 		error = 'Invalid login or username'
@@ -108,75 +109,75 @@ def loginAuth_as():
 #Authenticates the registration for customer
 @app.route('/registerAuth_cust', methods=['GET', 'POST'])
 def registerAuth_cust():
-    #grabs information from the forms
-    Email = request.form['Email']
-    Password = request.form['Password']
-    FirstName = request.form['FirstName']
-    LastName = request.form['LastName']
-    Building_num = request.form['Building_num']
-    Street_name = request.form['Street_name']
-    Apartment_num = request.form['Apartment_num']
-    City = request.form['City']
-    State = request.form['State']
-    Zip_code = request.form['Zip_code']
-    Passport_num = request.form['Passport_num']
-    Passport_expiration = request.form['Passport_expiration']
-    Passport_country = request.form['Passport_country']
-    Date_of_birth = request.form['Date_of_birth']
+	#grabs information from the forms
+	Email = request.form['Email']
+	Password = request.form['Password']
+	FirstName = request.form['FirstName']
+	LastName = request.form['LastName']
+	Building_num = request.form['Building_num']
+	Street_name = request.form['Street_name']
+	Apartment_num = request.form['Apartment_num']
+	City = request.form['City']
+	State = request.form['State']
+	Zip_code = request.form['Zip_code']
+	Passport_num = request.form['Passport_num']
+	Passport_expiration = request.form['Passport_expiration']
+	Passport_country = request.form['Passport_country']
+	Date_of_birth = request.form['Date_of_birth']
 
-    #cursor used to send queries
-    cursor = conn.cursor()
-    #executes query
-    query = 'SELECT * FROM Customer WHERE Email = %s'
-    cursor.execute(query, (Email))
-    #stores the results in a variable
-    data = cursor.fetchone()
-    #use fetchall() if you are expecting more than 1 data row
-    error = None
-    if(data):
-        #If the previous query returns data, then user exists
-        error = "This customer already exists"
-        return render_template('customer_reg.html', error = error)
-    else:
-        ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-        cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
-        conn.commit()
-        cursor.close()
-        return render_template('customer_home.html')
+	#cursor used to send queries
+	cursor = conn.cursor()
+	#executes query
+	query = 'SELECT * FROM Customer WHERE Email = %s'
+	cursor.execute(query, (Email))
+	#stores the results in a variable
+	data = cursor.fetchone()
+	#use fetchall() if you are expecting more than 1 data row
+	error = None
+	if(data):
+		#If the previous query returns data, then user exists
+		error = "This customer already exists"
+		return render_template('customer_reg.html', error = error)
+	else:
+		ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+		cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
+		conn.commit()
+		cursor.close()
+		return render_template('customer_home.html')
     
 #Authenticates the registration for airline staff
 @app.route('/registerAuth_as', methods=['GET', 'POST'])
 def registerAuth_as():
-    #grabs information from the forms
-    Username = request.form['Username']
-    Airline_name = request.form['Airline_name']
-    Password = request.form['Password']
-    First_name = request.form['First_name']
-    Last_name = request.form['Last_name']
-    Date_of_birth = request.form['Date_of_birth']
+	#grabs information from the forms
+	Username = request.form['Username']
+	Airline_name = request.form['Airline_name']
+	Password = request.form['Password']
+	First_name = request.form['First_name']
+	Last_name = request.form['Last_name']
+	Date_of_birth = request.form['Date_of_birth']
 
-    #cursor used to send queries
-    cursor = conn.cursor()
-    #executes query
-    query = 'SELECT * FROM Airline_Staff WHERE Username = %s and Airline_name = %s'
-    cursor.execute(query, (Username, Airline_name))
-    #stores the results in a variable
-    data = cursor.fetchone()
-    #use fetchall() if you are expecting more than 1 data row
-    error = None
-    if(data):
-        #If the previous query returns data, then user exists
-        error = "This airline staff member already exists"
-        return render_template('as_reg.html', error = error)
-    else:
-        ins = 'INSERT INTO Airline_Staff VALUES(%s, %s, %s, %s, %s, %s)'
-        cursor.execute(ins, (Username, Airline_name, Password, First_name, Last_name, Date_of_birth))
-        conn.commit()
-        cursor.close()
-        return render_template('index.html')   # CHANGE
+	#cursor used to send queries
+	cursor = conn.cursor()
+	#executes query
+	query = 'SELECT * FROM Airline_Staff WHERE Username = %s and Airline_name = %s'
+	cursor.execute(query, (Username, Airline_name))
+	#stores the results in a variable
+	data = cursor.fetchone()
+	#use fetchall() if you are expecting more than 1 data row
+	error = None
+	if(data):
+		#If the previous query returns data, then user exists
+		error = "This airline staff member already exists"
+		return render_template('as_reg.html', error = error)
+	else:
+		ins = 'INSERT INTO Airline_Staff VALUES(%s, %s, %s, %s, %s, %s)'
+		cursor.execute(ins, (Username, Airline_name, Password, First_name, Last_name, Date_of_birth))
+		conn.commit()
+		cursor.close()
+		return render_template('index.html')   # CHANGE
 
 
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 def home():
     
 	username = None
@@ -189,7 +190,7 @@ def home():
 	cursor.close()
 	return render_template('home.html', username=username, flights=data1)
 
-@app.route('/customer_home')
+@app.route('/customer_home', methods=['GET', 'POST'])
 def customer_home():
     
 	Email = 'None'
@@ -205,14 +206,51 @@ def customer_home():
 	cursor.close()
 	return render_template('customer_home.html', email=Email, flights=data2)
 
-@app.route('/as_home.html')
+@app.route('/as_home.html', methods=['GET', 'POST'])
 def as_home():
 
 	name = None
 	if 'firstName' in session:
+		print(session['firstName'])
 		name = session['firstName']
 		
 	return render_template('as_home.html', name=name)
+
+@app.route('/staff/view_flights', methods=['GET', 'POST'])
+def view_flights():
+	return render_template('staff/view_flights.html')
+
+@app.route('/staff/create_flight', methods=['GET', 'POST'])
+def create_flight():
+	return render_template('staff/create_flight.html')
+
+@app.route('/staff/change_status', methods=['GET', 'POST'])
+def change_status():
+	return render_template('staff/change_status.html')
+
+@app.route('/staff/add_airplane', methods=['GET', 'POST'])
+def add_airplane():
+	return render_template('staff/add_airplane.html')
+
+@app.route('/staff/add_airport', methods=['GET', 'POST'])
+def add_airport():
+	return render_template('staff/add_airport.html')
+
+@app.route('/staff/flight_ratings', methods=['GET', 'POST'])
+def flight_ratings():
+	return render_template('staff/flight_ratings.html')
+
+@app.route('/staff/freq_cust', methods=['GET', 'POST'])
+def freq_cust():
+	return render_template('staff/freq_cust.html')
+
+@app.route('/staff/reports', methods=['GET', 'POST'])
+def reports():
+	return render_template('staff/reports.html')
+
+@app.route('/staff/revenue', methods=['GET', 'POST'])
+def revenue():
+	return render_template('staff/revenue.html')
 		
 # @app.route('/book', methods=['GET', 'POST'])
 # def post():
