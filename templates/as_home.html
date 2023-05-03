@@ -1,51 +1,22 @@
 {% extends "header.html" %}
 
 {% block body %}
-{% if username != None %}
-	<h1>Welcome, {{username}}</h1>
+{% if name != None %}
+	<h2>Welcome, {{name}}</h2>
 {% endif %}
-<form action="/book" method="POST">
-	<input type="text" class="form-control" name = "source" placeholder="From" required/> </br>
-	<input type="text" class="form-control" name = "destination" placeholder="To" required/> </br>
-	<input type="date" name = "depart" placeholder="Depart" required/> </br>
-	<input type="date" name = "return" placeholder="Return" required/> </br>
-	<input type="submit" value = "Search" />
-</form>
-
-<style type="text/css">
-	table, th, td{
-		border: 1px solid black;
-	}
-</style>
-
-<table class = "table">
-	<th>Airline name</th>
-	<th>Flight Number</th>
-
-{% for row in flights %}
-	<tr>
-		<td>{{row['Airline_name']}}</td>
-		<td>{{row['Flight_num']}}</td>
-	</tr>
-{% endfor %}
-</table>
+<br><br>
+<a href="/staff/view_flights">View flights</a><br><br>
+<a href="/staff/create_flight">Create new flights</a><br><br>
+<a href="/staff/change_status">Change status of flights</a><br><br>
+<a href="/staff/add_airplane">Add airplane in the system</a><br><br>
+<a href="/staff/add_airport">Add new airport in the system</a><br><br>
+<a href="/staff/flight_ratings">View flight ratings</a><br><br>
+<a href="/staff/freq_cust">View frequent customers</a><br><br>
+<a href="/staff/reports">View reports</a><br><br>
+<a href="/staff/revenue">View earned revenue</a><br><br>
  
-<br>
-
-<table class = "table">
-	<th>Airline name</th>
-	<th>Flight Number</th>
-	<th>Departure Airport</th>
-
-{% for row in search %}
-	<tr>
-		<td>{{row['Airline_name']}}</td>
-		<td>{{row['Flight_num']}}</td>
-		<td>{{row['Name']}}</td>
-	</tr>
-{% endfor %}
-</table>
-
+<br><br><br>
+<a href="/as_home">Home</a>
 <a href="/logout">Logout</a>
 
 {% endblock %}
