@@ -1,0 +1,15 @@
+{% extends "header.html" %}
+
+{% block body %}
+<form action="/staff/add_airport" method="POST" class="col-3">
+    <input type="text" class="form-control" name = "name" placeholder="Airport Name" required/> </br>
+
+	<input type="text" class="form-control" name = "city" placeholder="City" required/> </br>
+    <input type="text" class="form-control" name = "country" placeholder="Country" required/> </br>
+
+    <input type="text" class="form-control" name = "ap_type" placeholder="Type (Domestic, Intenational, Both)" required/> </br>
+    <input class="btn btn-primary" type="submit" value = "Add Airport" />
+</form>
+
+
+{% endblock %}

@@ -267,6 +267,23 @@ def change_status():
 	return redirect(url_for('staff/change_status'))
 """
 
+"""
+@app.route('/staff/add_airport', methods=['GET', 'POST'])
+def add_airport():
+	name = request.form['name']
+	city = request.form['city']
+	country = request.form['country']
+	ap_type = request.form['ap_type']
+
+	cursor = conn.cursor()
+	query = 'INSERT INTO Airport VALUES(%s, %s, %s, %s)'
+	values =(name, city, country, ap_type)
+	cursor.execute(query, values)
+	conn.commit()
+	cursor.close()
+	return redirect(url_for('staff/add_airport'))
+"""
+
 @app.route('/logout')
 def logout():
 	session.pop('username')
