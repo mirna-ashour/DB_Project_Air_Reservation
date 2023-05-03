@@ -143,7 +143,8 @@ def registerAuth_cus():
 		cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
 		conn.commit()
 		cursor.close()
-		return render_template('cus_home.html')
+		error = "You have been successfully registered! Please login now."
+		return render_template('cus_login.html', error=error)
     
 #Authenticates the registration for airline staff
 @app.route('/registerAuth_as', methods=['GET', 'POST'])
@@ -189,7 +190,7 @@ def cus_home():
 	cursor.execute(query2, (email))
 	data2 = cursor.fetchone()
 	cursor.close()
-	return render_template('cus_home.html', firstname=data2, flights=data, search=request.args.get('search'))
+	return render_template('cus_home.html', firstname=data2, flights=data)#, search=request.args.get('search')
 		
 @app.route('/search')
 def search():
@@ -374,4 +375,4 @@ app.secret_key = 'some key that you will never guess'
 #debug = True -> you don't have to restart flask
 #for changes to go through, TURN OFF FOR PRODUCTION
 if __name__ == "__main__":
-	app.run('127.0.0.1', 5000, debug = True)
+	app.run('127.0.0.1', 4000, debug = True)
