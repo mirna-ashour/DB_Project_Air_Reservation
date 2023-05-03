@@ -7,9 +7,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-		               port = 8889,
+		            #    port = 8889,
                        user='root',
-                       password='root',
+                       password='',
                        db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -97,8 +97,9 @@ def loginAuth_as():
 	if(data):
 		#creates a session for the the user
 		#session is a built in
-		session['Username'] = data['FirstName']
-		return redirect(url_for('home'))
+		session['username'] = data['Username']
+		session['firstName'] = data['First_name']
+		return render_template('as_home.html')
 	else:
 		#returns an error message to the html page
 		error = 'Invalid login or username'
@@ -203,6 +204,15 @@ def customer_home():
 	data2 = cursor.fetchall()
 	cursor.close()
 	return render_template('customer_home.html', email=Email, flights=data2)
+
+@app.route('/as_home.html')
+def as_home():
+
+	name = None
+	if 'firstName' in session:
+		name = session['firstName']
+		
+	return render_template('as_home.html', name=name)
 		
 # @app.route('/book', methods=['GET', 'POST'])
 # def post():
