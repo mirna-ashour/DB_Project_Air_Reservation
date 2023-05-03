@@ -51,7 +51,7 @@ def as_reg():
 
 #Authenticates the login for customer
 @app.route('/loginAuth_cus', methods=['GET', 'POST'])
-def loginAuth_cust():
+def loginAuth_cus():
 	#grabs information from the forms
 	Email = request.form['Email']
 	Password = request.form['Password']
@@ -108,7 +108,7 @@ def loginAuth_as():
 
 #Authenticates the registration for customer
 @app.route('/registerAuth_cus', methods=['GET', 'POST'])
-def registerAuth_cust():
+def registerAuth_cus():
 	#grabs information from the forms
 	Email = request.form['Email']
 	Password = request.form['Password']
@@ -126,24 +126,24 @@ def registerAuth_cust():
 	Date_of_birth = request.form['Date_of_birth']
 
     #cursor used to send queries
-    cursor = conn.cursor()
+	cursor = conn.cursor()
     #executes query
-    query = 'SELECT * FROM Customer WHERE Email = %s'
-    cursor.execute(query, (Email))
+	query = 'SELECT * FROM Customer WHERE Email = %s'
+	cursor.execute(query, (Email))
     #stores the results in a variable
-    data = cursor.fetchone()
+	data = cursor.fetchone()
     #use fetchall() if you are expecting more than 1 data row
-    error = None
-    if(data):
+	error = None
+	if(data):
         #If the previous query returns data, then user exists
-        error = "This customer already exists"
-        return render_template('cus_reg.html', error = error)
-    else:
-        ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-        cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
-        conn.commit()
-        cursor.close()
-        return render_template('cus_home.html')
+		error = "This customer already exists"
+		return render_template('cus_reg.html', error = error)
+	else:
+		ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+		cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
+		conn.commit()
+		cursor.close()
+		return render_template('cus_home.html')
     
 #Authenticates the registration for airline staff
 @app.route('/registerAuth_as', methods=['GET', 'POST'])
@@ -208,6 +208,86 @@ def search():
 	cursor.close()
 	return redirect(url_for('cus_home', search=data))
 
+
+@app.route('/as_home.html', methods=['GET', 'POST'])
+def as_home():
+
+	name = None
+	if 'firstName' in session:
+		print(session['firstName'])
+		name = session['firstName']
+		
+	return render_template('as_home.html', name=name)
+
+@app.route('/staff/view_flights', methods=['GET', 'POST'])
+def view_flights():
+	return render_template('staff/view_flights.html')
+
+@app.route('/staff/create_flight', methods=['GET', 'POST'])
+def create_flight():
+	# departure = request.form['departure']
+	# arrival = request.form['arrival'] 
+	# flightNum = request.form['flightNum'] 
+	# airplaneID = request.form['airplane'] 	# needs validation
+	# departDate = request.form['departDate'] 
+	# departTime = request.form['departTime'] 
+	# arriveDate = request.form['arriveDate'] 
+	# arriveTime = request.form['arriveTime'] 
+	# basePrice = request.form['basePrice'] 
+
+	# status = "on-time"
+	# cursor = conn.cursor()
+	
+
+	query = 'INSERT INTO flight VALUES()'
+	# params = ( )
+	# print(values)
+	# cursor.execute(query, params)
+	# conn.commit()
+	# cursor.close()
+	return render_template('staff/create_flight.html')
+
+@app.route('/staff/change_status', methods=['GET', 'POST'])
+def change_status():
+	return render_template('staff/change_status.html')
+
+@app.route('/staff/add_airplane', methods=['GET', 'POST'])
+def add_airplane():
+	return render_template('staff/add_airplane.html')
+
+@app.route('/staff/add_airport', methods=['GET', 'POST'])
+def add_airport():
+	return render_template('staff/add_airport.html')
+
+@app.route('/staff/flight_ratings', methods=['GET', 'POST'])
+def flight_ratings():
+	return render_template('staff/flight_ratings.html')
+
+@app.route('/staff/freq_cust', methods=['GET', 'POST'])
+def freq_cust():
+	return render_template('staff/freq_cust.html')
+
+@app.route('/staff/reports', methods=['GET', 'POST'])
+def reports():
+	return render_template('staff/reports.html')
+
+@app.route('/staff/revenue', methods=['GET', 'POST'])
+def revenue():
+	return render_template('staff/revenue.html')
+		
+# @app.route('/book', methods=['GET', 'POST'])
+# def post():
+# 	cursor = conn.cursor()
+# 	source = request.form['source']
+# 	destination = request.form['destination']
+# 	depart = request.form['depart']
+# 	ret = request.form['return']
+# 	query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
+# 	cursor.execute(query, (source))
+# 	search = cursor.fetchall()
+# 	conn.commit()
+# 	cursor.close()
+# 	return redirect(url_for('home', search=search))
 
 @app.route('/logout')
 def logout():
