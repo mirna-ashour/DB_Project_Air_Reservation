@@ -308,7 +308,7 @@ def add_airplane():
 	return redirect(url_for('staff/add_airplane'))
 """
 
-@app.route('/as_home.html', methods=['GET', 'POST'])
+@app.route('/as_home', methods=['GET', 'POST'])
 def as_home():
 
 	name = None
