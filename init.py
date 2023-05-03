@@ -249,6 +249,24 @@ def create_flight():
 		return render_template('create_flight.html', error=error)
 """
 
+"""
+@app.route('/change_status', methods=['GET', 'POST'])
+def change_status():
+	flightNum = request.form['flightNum']
+	airline = request.form['airlineName']
+	departDate = request.form['departDate']
+	departTime = request.form['departTime']
+	statusUpdate = request.form['newStatus']
+
+	cursor = conn.cursor()
+	query = 'UPDATE Flight SET Status = %s WHERE Flight_num = %s AND Airline_name = %s AND Departure_date = %s AND Departure_time = %s'
+	values = (statusUpdate, flightNum, airline, departDate, departTime)
+	cursor.execute(query, values)
+	conn.commit()
+	cursor.close()
+	return redirect(url_for('staff/change_status'))
+"""
+
 @app.route('/logout')
 def logout():
 	session.pop('username')
