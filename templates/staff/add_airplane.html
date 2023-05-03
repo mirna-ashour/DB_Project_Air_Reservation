@@ -1,0 +1,14 @@
+{% extends "header.html" %}
+
+{% block body %}
+
+<form action="/staff/add_airplane" method="POST" class="col-2">
+    <input type="text" class="form-control" name = "manufacturer" placeholder="Manufacturer Name" required/> </br>
+    <input type="date" class="form-control" name = "manufactureDate" placeholder="Manufacture Date" required/> </br>
+    <input type="number" class="form-control" name = "age" placeholder="Plane Age (Years)" required/> </br>
+
+    <input type="text" class="form-control" name = "numOfSeats" placeholder="Number of Seats" required/> </br>
+    <input class="btn btn-primary" type="submit" value = "Add Airplane" />
+</form>
+
+{% endblock %}

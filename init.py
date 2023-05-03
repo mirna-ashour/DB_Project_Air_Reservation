@@ -284,6 +284,29 @@ def add_airport():
 	cursor.close()
 	return redirect(url_for('staff/add_airport'))
 """
+"""
+@app.route('/staff/add_airplane', methods=['GET', 'POST'])
+def add_airplane():
+	cursor = conn.cursor()
+
+	username = session['uid']
+	query = 'SELECT Airline_name FROM Airline_Staff WHERE Username=%s'
+	cursor.execute(query, (username))
+	data = cursor.fetchone()
+	airline = data['Airline_name'] #!!!!
+
+	numOfSeats = request.form['numOfSeats']
+	manufactureDate = request.form['manufactureDate']
+	manufacturer = request.form['manufacturer']
+	age = request.form['age'] #maybe we should do a function that calculates this?
+
+	query = 'INSERT INTO Airplane VALUES(%s, %s, %s, %s, %s)'
+	values = (airline, numOfSeats, manufacturer, manufactureDate, age)
+	cursor.execute(query, values)
+	conn.commit()
+	cursor.close()
+	return redirect(url_for('staff/add_airplane'))
+"""
 
 @app.route('/as_home.html', methods=['GET', 'POST'])
 def as_home():
