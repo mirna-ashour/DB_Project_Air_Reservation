@@ -1,7 +1,7 @@
 INSERT INTO Airline VALUES ('Jet Blue');
 
 INSERT INTO Airport(Name, City, Country, Type) VALUES ('JFK', 'New York City', 'US', 'Int'),
-	('PVG', 'Shanghai', 'China', 'Int');
+	('PVG', 'Shanghai', 'China', 'Int'), ('BNA', 'Nashville', 'TN', 'Dom');
 
 INSERT INTO Customer VALUES ('mirna@nyu.edu', 'password123', 'Mirna', 
 'Ashour', 152, 'Montague', 3, 'Brooklyn', 'New York', 11201, '1431243', 
@@ -25,7 +25,9 @@ INSERT INTO Flight VALUES ('Jet Blue', 3456, '18:19:03', '2023-08-05',  '23:19:0
                            
 ('Jet Blue', 3894, '12:04:19', '2023-04-19',  '18:03:03', '2023-08-06', 2, 1, 1000, 'on-time'),
                            
-('Jet Blue', 9353, '03:19:03', '2023-03-22',  '16:08:18', '2023-03-22', 1, 2, 297, 'delayed');
+('Jet Blue', 9353, '03:19:03', '2023-03-22',  '16:08:18', '2023-03-22', 1, 2, 297, 'delayed'),
+
+('Jet Blue', 10204, '05:27:35', '2023-05-17',  '08:56:18', '2023-05-17', 1, 3, 158, 'on-time');
 
 INSERT INTO Ticket(Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date,
 Purchase_date, Purchase_time, Card_type) VALUES

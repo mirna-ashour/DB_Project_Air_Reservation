@@ -2,63 +2,105 @@
 
 {% block body %}
 {% if firstname != None %}
-	<h1>Welcome, {{firstname['FirstName']}}</h1>
+    <h1>Welcome, {{firstname['FirstName']}}</h1>
 {% endif %}
 
 <style type="text/css">
-	table, th, td{
-		border: 1px solid black;
-	}
+    table, th, td{
+        border: 1px solid black;
+    }
 </style>
-
+<br>
 <h2>View Your Flights</h2>
 <table class = "table">
-	<th>Airline Name</th>
-	<th>Flight Number</th>
+    <th>Airline Name</th>
+    <th>Flight Number</th>
     <th>Departure Time</th>
     <th>Departure Date</th>
-    <!-- <th>Arrival Time</th>
-    <th>Arrival Date</th>
-    <th>Departure Airport ID</th>
-    <th>Arrival Airport ID</th> -->
 {% for row in flights %}
-	<tr>
-		<td>{{row['Airline_name']}}</td>
-		<td>{{row['Flight_num']}}</td>
+    <tr>
+        <td>{{row['Airline_name']}}</td>
+        <td>{{row['Flight_num']}}</td>
         <td>{{row['Departure_time']}}</td>
         <td>{{row['Departure_date']}}</td>
-        <!-- <td>{{row['Arrival_time']}}</td>
-        <td>{{row['Arrival_date']}}</td>
-        <td>{{row['Departure_airport_ID']}}</td>
-        <td>{{row['Arrival_airport_ID']}}</td> -->
-	</tr>
+    </tr>
 {% endfor %}
 </table>
 
 <h2>Search For Flights</h2>
-<form action="/search">
-	<input type="text" class="form-control" name = "source" placeholder="From" required/> </br>
-	<!-- <input type="text" class="form-control" name = "destination" placeholder="To" required/> </br> -->
-	<!-- <input type="date" name = "depart" placeholder="Depart" required/> </br>
-	<input type="date" name = "return" placeholder="Return" required/> </br> -->
-	<input type="submit" value = "Search" />
+<form action="/cus_home" method="POST">
+    <input type="text" class="form-control" name = "source" placeholder="From (Airport Name)" required/> </br>
+    <input type="text" class="form-control" name = "destination" placeholder="To (Airport Name)" required/> </br>
+    <!-- <input type="date" name = "depart" placeholder="Depart" required/> </br>
+    <input type="date" name = "return" placeholder="Return" required/> </br> -->
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-secondary active">
+          <input type="radio" name="options" id="option1" autocomplete="off" checked> Round Trip
+        </label>
+        <label class="btn btn-secondary">
+          <input type="radio" name="options" id="option2" autocomplete="off"> One Way
+        </label>
+    </div>
+    <br><br>
+    <input type="submit" value = "Search" /> </br>
+<br>
 </form>
-<!-- <br> -->
-{% if firstname != None %}
-	<table class = "table">
-		<th>Airline name</th>
-		<th>Flight Number</th>
-		<!-- <th>Departure Airport</th> -->
-	{% for row in search %}
-		<tr>
-			<td>{{row['Airline_name']}}</td>
-			<td>{{row['Flight_num']}}</td>
-			<!-- <td>{{row['Name']}}</td> -->
-		</tr>
-	{% endfor %}
-	</table>
+
+{% if going != None %}
+	{% if trip_type != option1 %} 
+    	<h2>Departing Flights</h2>
+	{% else %} 
+    	<h2>Flights</h2>
+	{% endif %}
+    <table class = "table">
+        <th>Airline Name</th>
+        <th>Flight Number</th>
+        <th>Departure Time</th>
+        <th>Departure Date</th>
+        <th>Arrival Time</th>
+        <th>Arrival Date</th>
+        <th>Departure Airport</th>
+        <th>Arrival Airport</th>
+    {% for row in going %}
+        <tr>
+            <td>{{row['Airline_name']}}</td>
+            <td>{{row['Flight_num']}}</td>
+            <td>{{row['Departure_time']}}</td>
+            <td>{{row['Departure_date']}}</td>
+            <td>{{row['Arrival_time']}}</td>
+            <td>{{row['Arrival_date']}}</td>
+            <td>{{row['Name']}}</td>
+            <td>{{row['B.Name']}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+	{% if trip_type != option1 %}
+		<h2>Returning Trips</h2>
+		<table class = "table">
+			<th>Airline Name</th>
+			<th>Flight Number</th>
+			<th>Departure Time</th>
+			<th>Departure Date</th>
+			<th>Arrival Time</th>
+			<th>Arrival Date</th>
+			<th>Departure Airport</th>
+			<th>Arrival Airport</th>
+		{% for row in returning %}
+			<tr>
+				<td>{{row['Airline_name']}}</td>
+				<td>{{row['Flight_num']}}</td>
+				<td>{{row['Departure_time']}}</td>
+				<td>{{row['Departure_date']}}</td>
+				<td>{{row['Arrival_time']}}</td>
+				<td>{{row['Arrival_date']}}</td>
+				<td>{{row['Name']}}</td>
+				<td>{{row['B.Name']}}</td>
+			</tr>
+		{% endfor %}
+		</table>
+	{% endif %}
 {% endif %}
 
-<a href="/logout">Logout</a>
 
+<a href="/logout">Logout</a>
 {% endblock %}

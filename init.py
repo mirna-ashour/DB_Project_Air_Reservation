@@ -136,15 +136,15 @@ def registerAuth_cus():
 	error = None
 	if(data):
         #If the previous query returns data, then user exists
-		error = "This customer already exists"
-		return render_template('cus_reg.html', error = error)
+		flash("This customer already exists")
+		return render_template('cus_reg.html')
 	else:
 		ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
 		cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
 		conn.commit()
 		cursor.close()
-		error = "You have been successfully registered! Please login now."
-		return render_template('cus_login.html', error=error)
+		flash("You have been successfully registered! Please login now.")
+		return render_template('cus_login.html')
     
 #Authenticates the registration for airline staff
 @app.route('/registerAuth_as', methods=['GET', 'POST'])
@@ -177,7 +177,7 @@ def registerAuth_as():
 		cursor.close()
 		return render_template('index.html')   # CHANGE
 
-@app.route('/cus_home')
+@app.route('/cus_home', methods =['GET', 'POST']) #, methods =['GET', 'POST']
 def cus_home():
 	email = 'None'
 	if 'Email' in session:
@@ -189,25 +189,28 @@ def cus_home():
 	query2 = 'SELECT FirstName From Customer WHERE Email = %s'
 	cursor.execute(query2, (email))
 	data2 = cursor.fetchone()
-	cursor.close()
-	return render_template('cus_home.html', firstname=data2, flights=data)#, search=request.args.get('search')
-		
-@app.route('/search')
-def search():
-	cursor = conn.cursor()
-	source = request.form['source']
-	# destination = request.form['destination']
-	# depart = request.form['depart']
-	# ret = request.form['return']
-	# query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
-	# query = 'SELECT * FROM Flight WHERE Departure_airport_ID in (SELECT Airport_ID FROM Airport WHERE Name = %s) AND Arrival_airport_ID in (SELECT Airport_ID FROM Airport WHERE Name = %s)'
-	# query = 'SELECT * FROM (Flight as F JOIN Airport as A ON F.Departure_airport_ID = A.Airport_ID) WHERE Name = %s'
-	query = 'SELECT * FROM Flight'
-	cursor.execute(query)
-	data = cursor.fetchall()
-	conn.commit()
-	cursor.close()
-	return redirect(url_for('cus_home', search=data))
+	if request.method == 'POST':
+		source = request.form['source']
+		destination = request.form['destination']
+		trip_type = request.form['options']
+		query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s)'
+		cursor.execute(query3, (source, destination))
+		going = cursor.fetchall()
+		returning = 'None'
+		if trip_type != 'option2': # trip_type = roundtrip
+			query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s)'
+			cursor.execute(query4, (source, destination))
+			returning = cursor.fetchall()
+		conn.commit()
+		cursor.close()
+		return render_template('cus_home.html', firstname=data2, flights=data, going=going, returning=returning, trip_type=trip_type)			
+	else:
+		going = 'None'
+		returning = 'None'
+		trip_type = 'None'
+		conn.commit()
+		cursor.close()
+		return render_template('cus_home.html', firstname=data2, flights=data, going=going, returning=returning, trip_type=trip_type)
 
 #NEEDS AIRPLANE_ID, WILL ASK NISHA FOR HOW SHE UPDATED THE FLIGHTS TABLE BC I CAN'T SEE IT - Olivia
 """
