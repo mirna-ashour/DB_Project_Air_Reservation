@@ -1,0 +1,59 @@
+{% extends "header.html" %}
+
+{% block body %}
+
+<form action="/purchase" method="POST">
+    <div class="row">
+        <div class="col">
+          <input type="text" class="form-control" name = "Airline_name" placeholder="airline name" required/></br>
+        </div>
+        <div class="col">
+          <input type="text" class="form-control" name = "Flight_num" placeholder="flight number" required/></br>
+        </div>
+      </div>
+    <div class="row">
+        <div class="col">
+          <input type="text" class="form-control" name = "Departure_time" placeholder="departure time" required/></br>
+        </div>
+        <div class="col">
+          <input type="text" class="form-control" name = "Departure_date" placeholder="departure date" required/></br>
+        </div>
+      </div>
+    <div class="row">
+      <div class="col">
+        <input type="text" class="form-control" name = "FirstName" placeholder="first name" required/></br>
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" name = "LastName" placeholder="last name" required/></br>
+      </div>
+    </div>
+    <input type="text" class="form-control" name = "Date_of_birth" placeholder="date of birth (YYYY-MM-DD)" required/></br>
+    <div class="row">
+        <div class="col">
+          <input type="text" class="form-control" name = "Card_num" placeholder="card number" required/></br>
+        </div>
+        <div class="col">
+            <input type="text" class="form-control" name = "Name_on_card" placeholder="name on card" required/></br>
+          </div>
+        <div class="col">
+          <input type="text" class="form-control" name = "Expiration_date" placeholder="expiration date (YYYY-MM-DD)" required/></br>
+        </div>
+        <div class="col">
+          <input type="text" class="form-control" name = "Card_type" placeholder="card type" required/></br>
+        </div>
+      </div>
+      <input type="submit" value = "Purchase" /> </br>
+</form>
+<a href="/cus_home">Go back</a>
+{% endblock %}
+
+
+
+
+purchase_date
+purchase_time
+Airline_name
+Flight_num
+Departure_time
+departure_date
+
