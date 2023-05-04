@@ -471,8 +471,8 @@ def add_airport_auth():
 	return render_template('staff/add_airport.html')
 
 #PROBABLY NEED A FORM FOR SPECIFIC FLIGHT INSTEAD. QUERIES WILL BE EASIER
-@app.route('/staff/flight_ratings_auth')
-def flight_ratings_auth():
+@app.route('/staff/flight_ratings')
+def flight_ratings():
 	return render_template('staff/flight_ratings.html')
 
 @app.route('/staff/flight_ratings_auth')
