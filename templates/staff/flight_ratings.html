@@ -1,0 +1,49 @@
+{% extends "header.html" %}
+
+{% block body %}
+
+<form action="/staff/flight_ratings_auth" method="POST" class="col-3">
+    <input type="text" class="form-control" name = "flightNum" placeholder="Flight Number" required/> </br>
+    <input type="date" class="form-control" name = "departureDate" placeholder="Departure Date" required/> </br>
+    <input type="time" class="form-control" name = "departureTime" placeholder="Departure Time" required/> </br>
+    <label for="showRatings">Show customer ratings?</label><br>   
+    <input type="radio" id="showRatingsYes" name="showRatings" value="true">Yes<br>
+    <input type="radio" id="showRatingsNo" name="showRatings" value="false" checked>No<br>
+    <input class="btn btn-primary" type="submit" value = "View" />
+</form>
+
+<p><b>Flight Number:</b> {{ data1['Flight_num'] }} </p>
+<p><b>Average Rating:</b> {{ data1['Avg_rating'] }}</p>
+
+<br><br>
+
+{% if data2 != None %}
+<h2>Customer ratings for flight:</h2>
+<table class = "table">
+    <th>First Name</th>
+    <th>Last Name</th>
+    <th>Email</th>
+    <th>Rating</th>
+    <th>Comment</th>
+{% for row in data2 %}
+    <tr>
+        <td>{{row['FirstName']}}</td>
+        <td>{{row['LastName']}}</td>
+        <td>{{row['Email']}}</td>
+        <td>{{row['Rate']}}</td>
+        <td>{{row['Comment']}}</td>
+    </tr>
+{% endfor %}
+</table>
+
+
+{% endif %}
+
+
+
+
+<br><br>
+<a href="/logout">Logout</a>
+<a href="/as_home">Home</a>
+
+{% endblock %}

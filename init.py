@@ -335,13 +335,6 @@ def add_airplane():
 @app.route('/add_airplane_auth', methods=['GET', 'POST'])
 def add_airplane_auth():
 	cursor = conn.cursor()
-
-			#we dont need to do this. The staff's airline gets stored in the session when they log in
-	# username = session['uid']
-	# query = 'SELECT Airline_name FROM Airline_Staff WHERE Username=%s'
-	# cursor.execute(query, (username))
-	# data = cursor.fetchone()
-	# airline = data['Airline_name'] #!!!!
 	airline = session['airline']
 
 	numOfSeats = request.form['numOfSeats']
@@ -376,17 +369,31 @@ def add_airport_auth():
 	return render_template('staff/add_airport.html')
 
 #PROBABLY NEED A FORM FOR SPECIFIC FLIGHT INSTEAD. QUERIES WILL BE EASIER
-@app.route('/staff/flight_ratings')
-def flight_ratings():
+@app.route('/staff/flight_ratings_auth')
+def flight_ratings_auth():
+	return render_template('staff/flight_ratings.html')
+
+@app.route('/staff/flight_ratings_auth')
+def flight_ratings_auth():
+	showRatings = False
+	flightNum = request.form['flightNum']
+	departureDate = request.form['departureDate']
+	departureTime = request.form['departureTime']
+	showRatings = request.form['showRatings']
 	airline = session['airline']
+
 	cursor = conn.cursor()
-	query1 = 'SELECT Flight_num, avg(Rate) as avg_rating FROM Has_taken WHERE Airline_name = %s GROUP BY Flight_num)'
-	cursor.execute(query1, (airline))
+	query1 = 'SELECT Flight_num, avg(Rate) as Avg_rating FROM Has_taken WHERE Airline_name = %s AND Flight_num = %s AND Departure_date = %s AND Departure_time = %s GROUP BY Flight_num)'
+	cursor.execute(query1, (airline, flightNum, departureDate, departureTime))
 	data1 = cursor.fetchall()
-	query2 = 'SELECT FirstName, LastName, rate, comment FROM Has_taken NATURAL JOIN Customer WHERE Airline_name = %s GROUP BY Flight_num)' #this isnt entirely right. not sure how to get each flight num separately
-	cursor.execute(query2, (airline))
-	data2 = cursor.fetchall()
-	return render_template('staff/flight_ratings.html', avg_ratings=data1, all_ratings=data2)
+	data2 = None
+
+	if(showRatings == "true"):
+		query2 = 'SELECT FirstName, LastName, Email, Rate, Comment FROM Has_taken NATURAL JOIN Customer WHERE Airline_name = %s AND Flight_num = %s AND Departure_date = %s AND Departure_time = %s)' 
+		cursor.execute(query2, (airline, flightNum, departureDate, departureTime))
+		data2 = cursor.fetchall()
+
+	return render_template('staff/flight_ratings.html', avg_rating=data1, all_ratings=data2)
 
 @app.route('/staff/freq_cust')
 def freq_cust():
