@@ -163,7 +163,8 @@
     <th>Departure Date</th>
 	<th>Purchase Date</th>
 	<th>Purchase Time</th>
-{% for row in tickets %}
+	<th>Delete Ticket</th>
+{% for row in ticket %}
     <tr>
         <td>{{row['Airline_name']}}</td>
         <td>{{row['Flight_num']}}</td>
@@ -171,6 +172,13 @@
         <td>{{row['Departure_date']}}</td>
 		<td>{{row['Purchase_date']}}</td>
 		<td>{{row['Purchase_time']}}</td>
+		<td><form action="/cus_home" method="POST">
+			  <div class="form-check">
+				<input type="checkbox" value = "1" name="mycheckbox">
+			  </div>
+			  <input type="submit" value = "Submit" />
+			</form>
+		</td>
     </tr>
 {% endfor %}
 </table>

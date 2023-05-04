@@ -211,8 +211,10 @@ def cus_home():
 	query2 = 'SELECT FirstName From Customer WHERE Email = %s'
 	cursor.execute(query2, (email))
 	data2 = cursor.fetchone()
-	query = 'SELECT*'
-	if request.method == 'POST':			
+	query5 = 'SELECT * From Ticket WHERE Email = %s'
+	cursor.execute(query5, (email))
+	ticket = cursor.fetchall()
+	if request.method == 'POST':
 		source_city = request.form['source_city']
 		destination_city = request.form['destination_city']
 		source_airp = request.form['source_airp']
@@ -298,26 +300,35 @@ def cus_home():
 					returning = cursor.fetchall()
 		conn.commit()
 		cursor.close()
-		return render_template('cus_home.html', firstname=data2, flights=data, going=going, returning=returning, trip_type=trip_type)		
+		return render_template('cus_home.html', firstname=data2, flights=data, ticket=ticket, going=going, returning=returning, trip_type=trip_type)		
 	else:
 		going = 'None'
 		returning = 'None'
 		trip_type = 'None'
 		conn.commit()
 		cursor.close()
-		return render_template('cus_home.html', firstname=data2, flights=data, going=going, returning=returning, trip_type=trip_type)
+		return render_template('cus_home.html', firstname=data2, flights=data, ticket=ticket, going=going, returning=returning, trip_type=trip_type)
 
 # #Customer purchase ticket route
 @app.route('/purchase', methods=['GET', 'POST'])
 def purchase():
 	if request.method == 'POST':
+		Email = request.form['Email']
+		cursor = conn.cursor()
+		query = 'SELECT * From Customer WHERE  Email = %s'
+		cursor.execute(query, (Email))
+		data = cursor.fetchone()
+		if data == None:
+			flash("Ticket not successfully purchased- given email was unregistered. Please register email here.")
+			return render_template('cus_reg.html')
+		else:
+			FirstName = data['FirstName']
+			LastName = data['LastName']
+			Date_of_birth = data['Date_of_birth']
 		Airline_name = request.form['Airline_name']
 		Flight_num = request.form['Flight_num']
 		Departure_time = request.form['Departure_time']
 		Departure_date = request.form['Departure_date']
-		FirstName = request.form['FirstName']
-		LastName = request.form['LastName']
-		Date_of_birth = request.form['Date_of_birth']
 		Card_num = request.form['Card_num']
 		Name_on_card = request.form['Name_on_card']
 		Expiration_date = request.form['Expiration_date']
