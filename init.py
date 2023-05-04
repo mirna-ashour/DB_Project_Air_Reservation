@@ -7,9 +7,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-		            #    port = 8889,
+		               port = 8889,
                        user='root',
-                       password='',
+                       password='root',
                        db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -375,14 +375,18 @@ def add_airport_auth():
 	cursor.close()
 	return render_template('staff/add_airport.html')
 
+#PROBABLY NEED A FORM FOR SPECIFIC FLIGHT INSTEAD. QUERIES WILL BE EASIER
 @app.route('/staff/flight_ratings')
 def flight_ratings():
 	airline = session['airline']
 	cursor = conn.cursor()
-	query1 = 'SELECT Flight_num, FirstName, avg(Rate) as avg_rating FROM Has_taken NATURAL JOIN Customer WHERE Airline_name = %s GROUP BY Flight_num)'
-	cursor.execute(query, (email))
+	query1 = 'SELECT Flight_num, avg(Rate) as avg_rating FROM Has_taken WHERE Airline_name = %s GROUP BY Flight_num)'
+	cursor.execute(query1, (airline))
 	data1 = cursor.fetchall()
-	return render_template('staff/flight_ratings.html')
+	query2 = 'SELECT FirstName, LastName, rate, comment FROM Has_taken NATURAL JOIN Customer WHERE Airline_name = %s GROUP BY Flight_num)' #this isnt entirely right. not sure how to get each flight num separately
+	cursor.execute(query2, (airline))
+	data2 = cursor.fetchall()
+	return render_template('staff/flight_ratings.html', avg_ratings=data1, all_ratings=data2)
 
 @app.route('/staff/freq_cust')
 def freq_cust():
