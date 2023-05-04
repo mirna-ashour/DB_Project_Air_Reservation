@@ -7,9 +7,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-		               port = 8889,
+		            #    port = 8889,
                        user='root',
-                       password='root',
+                       password='',
                        db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -377,10 +377,11 @@ def add_airport_auth():
 
 @app.route('/staff/flight_ratings')
 def flight_ratings():
-	return render_template('staff/flight_ratings.html')
-
-@app.route('/flight_ratings_auth', methods=['GET', 'POST'])
-def flight_ratings_auth():
+	airline = session['airline']
+	cursor = conn.cursor()
+	query1 = 'SELECT Flight_num, FirstName, avg(Rate) as avg_rating FROM Has_taken NATURAL JOIN Customer WHERE Airline_name = %s GROUP BY Flight_num)'
+	cursor.execute(query, (email))
+	data1 = cursor.fetchall()
 	return render_template('staff/flight_ratings.html')
 
 @app.route('/staff/freq_cust')
