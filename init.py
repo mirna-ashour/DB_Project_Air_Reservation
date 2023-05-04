@@ -342,7 +342,7 @@ def add_airplane_auth():
 	# cursor.execute(query, (username))
 	# data = cursor.fetchone()
 	# airline = data['Airline_name'] #!!!!
-	airlline = session['airline']
+	airline = session['airline']
 
 	numOfSeats = request.form['numOfSeats']
 	manufactureDate = request.form['manufactureDate']
