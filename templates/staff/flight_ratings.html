@@ -8,10 +8,15 @@
     <input type="time" class="form-control" name = "departureTime" placeholder="Departure Time" required/> </br>
     <label for="showRatings">Show customer ratings?</label><br>   
     <input type="radio" id="showRatingsYes" name="showRatings" value="true">Yes<br>
-    <input type="radio" id="showRatingsNo" name="showRatings" value="false" checked>No<br>
+    <input type="radio" id="showRatingsNo" name="showRatings" value="false" checked>No<br><br>
     <input class="btn btn-primary" type="submit" value = "View" />
 </form>
 
+{% if error %}
+<p class="error"><strong>Error:</strong> {{error}}</p>
+{% endif %}
+
+{% if error == None%}
 <p><b>Flight Number:</b> {{ data1['Flight_num'] }} </p>
 <p><b>Average Rating:</b> {{ data1['Avg_rating'] }}</p>
 
@@ -35,10 +40,9 @@
     </tr>
 {% endfor %}
 </table>
-
-
 {% endif %}
 
+{% endif %}
 
 
 
