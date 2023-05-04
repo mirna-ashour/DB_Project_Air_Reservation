@@ -8,9 +8,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-		               port = 8889,
+		            #    port = 8889,
                        user='root',
-                       password='root',
+                       password='',
                        db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -59,7 +59,7 @@ def loginAuth_cus():
 	if(data):
 		#creates a session for the the user
 		#session is a built in
-		session['Email'] = Email
+		session['username'] = Email
 		session['type'] = "cust"
 		return redirect(url_for('cus_home'))
 	else:
@@ -363,13 +363,14 @@ def as_home():
 	return render_template('as_home.html', name=name)
 
 #AS view flights form 
-@app.route('/staff/view_flights', methods=['GET', 'POST'])
+@app.route('/staff/view_flights')
 def view_flights():
 	return render_template('staff/view_flights.html')
 
 #AS view flights form authentication 
-
-	#MISSING. NOT YET CREATED ^^
+@app.route('/staff/view_flights_auth', methods=['GET', 'POST'])
+def view_flights_auth():
+	return render_template('staff/view_flights.html')
 
 #AS create flight form 
 @app.route('/staff/create_flight') 
@@ -470,13 +471,13 @@ def add_airport_auth():
 	cursor.close()
 	return render_template('staff/add_airport.html')
 
-#PROBABLY NEED A FORM FOR SPECIFIC FLIGHT INSTEAD. QUERIES WILL BE EASIER
 @app.route('/staff/flight_ratings')
 def flight_ratings():
-	return render_template('staff/flight_ratings.html')
+	return render_template('/staff/flight_ratings.html')
 
 @app.route('/staff/flight_ratings_auth')
 def flight_ratings_auth():
+	error = None
 	showRatings = False
 	flightNum = request.form['flightNum']
 	departureDate = request.form['departureDate']
@@ -490,12 +491,15 @@ def flight_ratings_auth():
 	data1 = cursor.fetchall()
 	data2 = None
 
-	if(showRatings == "true"):
-		query2 = 'SELECT FirstName, LastName, Email, Rate, Comment FROM Has_taken NATURAL JOIN Customer WHERE Airline_name = %s AND Flight_num = %s AND Departure_date = %s AND Departure_time = %s)' 
-		cursor.execute(query2, (airline, flightNum, departureDate, departureTime))
-		data2 = cursor.fetchall()
+	if(data1):
+		if(showRatings == "true"):
+			query2 = 'SELECT FirstName, LastName, Email, Rate, Comment FROM Has_taken NATURAL JOIN Customer WHERE Airline_name = %s AND Flight_num = %s AND Departure_date = %s AND Departure_time = %s)' 
+			cursor.execute(query2, (airline, flightNum, departureDate, departureTime))
+			data2 = cursor.fetchall()
+	else:
+		error = "There are no ratings for the given flight number."
 
-	return render_template('staff/flight_ratings.html', avg_rating=data1, all_ratings=data2)
+	return render_template('staff/flight_ratings.html', avg_rating=data1, all_ratings=data2, error=error)
 
 @app.route('/staff/freq_cust')
 def freq_cust():
@@ -520,6 +524,13 @@ def revenue():
 @app.route('/revenue_auth', methods=['GET', 'POST'])
 def revenue_auth():
 	return render_template('staff/revenue.html')
+
+
+
+
+
+
+
 
 """
 @app.route('/change_status', methods=['GET', 'POST'])
