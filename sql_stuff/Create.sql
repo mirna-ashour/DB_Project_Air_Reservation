@@ -90,13 +90,14 @@ CREATE TABLE Flight (
 
 CREATE TABLE Ticket (
 	Ticket_ID		int AUTO_INCREMENT, 
+	Email 			varchar(255),
 	Airline_name		varchar(255),
 	Flight_num		int, 
 	Departure_time	time, 
 	Departure_date	date, 
-	FirstName varchar(255) NOT NULL,
-	LastName varchar(255) NOT NULL,
-	Date_of_birth date NOT NULL,
+	FirstName 		varchar(255) NOT NULL,
+	LastName 		varchar(255) NOT NULL,
+	Date_of_birth 		date NOT NULL,
 	Card_num		int NOT NULL, 
 	Name_on_card	varchar(255) NOT NULL, 
 	Expiration_date	date NOT NULL,
@@ -104,6 +105,7 @@ CREATE TABLE Ticket (
 	Purchase_time	time NOT NULL,
 	Card_type		varchar(255) NOT NULL,
 	FOREIGN KEY (Airline_name, Flight_num, Departure_time, Departure_date) REFERENCES Flight(Airline_name, Flight_num, Departure_time, Departure_date),
+	FOREIGN KEY (Email) REFERENCES Customer(Email),
 	PRIMARY KEY (Ticket_ID, Airline_name, Flight_num, Departure_time, Departure_date)
 );
 
