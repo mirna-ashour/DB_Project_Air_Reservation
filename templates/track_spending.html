@@ -1,0 +1,39 @@
+{% extends "header.html" %}
+
+{% block body %}
+<h2>Track My Spending</h2>
+
+<form action="/track_spending" method="POST">
+	<div class="row">
+		<div class="col-4">
+			<b>From</b>
+		</div>
+		<div class="col-4">
+			<b>To</b>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-4">
+			<input type="date" name = "from" placeholder="From"/>
+		</div>
+		<div class="col-4">
+			<input type="date" name = "until" placeholder="To"/>
+		</div>
+	</div>
+	<input type="submit" value = "Track" />
+</form>
+<br>
+<h3>Total Spent from {{from_date}} to {{until_date}}: ${{total_cost['sum(Base_ticket_price)']}}</h3>
+
+<table class = "table">
+    <th>Month</th>
+    <th>Amount Spent($)</th>
+    {% for row in data_over_months %}
+        <tr>
+            <td>{{row[0]}}</td>
+            <td>{{(row[1])}}</td>
+        </tr>
+    {% endfor %}
+ </table>
+
+{% endblock %}

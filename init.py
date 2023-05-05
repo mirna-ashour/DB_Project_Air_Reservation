@@ -350,9 +350,16 @@ def delete():
 	Departure_time = request.args.get('Departure_time')
 	Departure_date = request.args.get('Departure_date')
 	# check if flight is more than 24 hours out*****
+	depart_date = date(int(Departure_date[0:4]), int(Departure_date[5:7]), int(Departure_date[8:10]))
+	depart_time = datetime.strptime(Departure_time, '%H:%M:%S')
 	today = date.today()
-	time = datetime.now()
-	Purchase_time = time.strftime("%H:%M:%S")
+	tomorrow = today + timedelta(days=1)
+	time = datetime.now().strftime("%H:%M:%S")
+	current_time = datetime.strptime(time, '%H:%M:%S')
+	if ((today <= depart_date <= tomorrow)):
+		if ((depart_date == tomorrow) and (depart_time <= current_time)):
+			flash("Cannot delete ticket- flight is less than 24 hours out.")
+			return redirect(url_for('cus_home'))
 	# *********
 	query = 'DELETE FROM Ticket WHERE Email = %s AND Airline_name = %s AND Flight_num = %s AND Departure_time = %s AND Departure_date = %s'
 	cursor.execute(query, (Email, Airline_name, Flight_num, Departure_time, Departure_date))
@@ -370,7 +377,7 @@ def purchase():
 		Name_on_card = request.form['Name_on_card']
 		Expiration_date = request.form['Expiration_date']
 		Card_type = request.form['Card_type']
-	cursor = conn.cursor(0)
+	cursor = conn.cursor()
 	Email = 'None'
 	if 'username' in session:
 		Email = session['username']
@@ -385,6 +392,63 @@ def purchase():
 	cursor.execute(query, (Email, Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type))
 	flash("Ticket successfully purchased")
 	return redirect(url_for('cus_home'))
+
+
+# Customer track spending route
+@app.route('/track_spending', methods=['GET', 'POST'])
+def track_spending():
+	Email = 'None'
+	if 'username' in session:
+		Email = session['username']
+	cursor = conn.cursor()
+	if request.method == 'POST':
+		from_date = request.form['from']
+		until_date = request.form['until']
+	else:
+		# default is total money spent for last year
+		until_date_bef = date.today()
+		from_date = until_date_bef - timedelta(days=365)
+		until_date = str(until_date_bef)
+	query = 'SELECT sum(Base_ticket_price) FROM Flight as F NATURAL JOIN Ticket as T WHERE T.Email = %s AND T.Purchase_date >= %s AND T.Purchase_date <= %s'
+	cursor.execute(query, (Email, from_date, until_date))
+	total_cost = cursor.fetchone()
+	if total_cost['sum(Base_ticket_price)'] == None:
+		total_cost['sum(Base_ticket_price)'] = 0
+	# find cost for each month in the last six months
+	data_over_months = []
+	curr_date = date(int(until_date[0:4]), int(until_date[5:7]), int(until_date[8:10]))
+	if request.method == 'GET':
+		for i in range(6):
+			first_of_currmonth = curr_date.replace(day=1)
+			next_month = curr_date.replace(day=28) + timedelta(days=4)
+			last_of_currmonth = next_month - timedelta(days=next_month.day)
+			query = 'SELECT sum(Base_ticket_price) FROM Flight as F NATURAL JOIN Ticket as T WHERE T.Email = %s AND T.Purchase_date >= %s AND T.Purchase_date <= %s'
+			cursor.execute(query, (Email, first_of_currmonth, last_of_currmonth))
+			sum_for_month = cursor.fetchone()
+			if sum_for_month['sum(Base_ticket_price)'] == None:
+				sum_for_month['sum(Base_ticket_price)'] = 0
+			curr_month = last_of_currmonth.month
+			data_over_months.append((curr_month, sum_for_month['sum(Base_ticket_price)']))
+			curr_date = first_of_currmonth - timedelta(days=18)
+	else:
+		end_date = date(int(from_date[0:4]), int(from_date[5:7]), int(from_date[8:10])).replace(day=1)
+		first_of_currmonth = curr_date.replace(day=1)
+		while first_of_currmonth != end_date:
+			first_of_currmonth = curr_date.replace(day=1)
+			next_month = curr_date.replace(day=28) + timedelta(days=4)
+			last_of_currmonth = next_month - timedelta(days=next_month.day)
+			query = 'SELECT sum(Base_ticket_price) FROM Flight as F NATURAL JOIN Ticket as T WHERE T.Email = %s AND T.Purchase_date >= %s AND T.Purchase_date <= %s'
+			cursor.execute(query, (Email, first_of_currmonth, last_of_currmonth))
+			sum_for_month = cursor.fetchone()
+			if sum_for_month['sum(Base_ticket_price)'] == None:
+				sum_for_month['sum(Base_ticket_price)'] = 0
+			curr_month = last_of_currmonth.month
+			data_over_months.append((curr_month, sum_for_month['sum(Base_ticket_price)']))
+			curr_date = first_of_currmonth - timedelta(days=18)
+
+	return render_template('track_spending.html', total_cost=total_cost, data_over_months=data_over_months, from_date=from_date, until_date=until_date)
+
+
 
 								######################################### AIRLINE STAFF CODE #############################################
 

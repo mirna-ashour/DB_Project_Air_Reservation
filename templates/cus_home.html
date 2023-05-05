@@ -130,9 +130,9 @@
 
 {% if going != 'None' %}
 	{% if trip_type == 'option2' %}   <!-- Round Trip -->
-    	<h3>Departing Flights</h3>
+    	<h4>Departing Flights</h4>
 	{% else %}    <!-- One Way -->
-    	<h3>Flights</h3>
+    	<h4>Flights</h4>
 	{% endif %}
     <table class = "table">
         <th>Airline Name</th>
@@ -188,7 +188,7 @@
     {% endfor %}
     </table>
 	{% if trip_type == 'option2' %}
-		<h3>Returning Trips</h3>
+		<h4>Returning Trips</h4>
 		<table class = "table">
 			<th>Airline Name</th>
 			<th>Flight Number</th>
@@ -246,12 +246,8 @@
 {% endif %}
 <br>
 
-<h2>Track My Spending</h2>
+<a href="/track_spending"> Track My Spending</a>
 
-Default view will be total amount of money spent in the past year and a bar
-chart/table showing month wise money spent for last 6 months. He/she will also have option to specify
-a range of dates to view total amount of money spent within that range and a bar chart/table showing
-month wise money spent within that range.
-
+<br>
 <a href="/logout">Logout</a>
 {% endblock %}
