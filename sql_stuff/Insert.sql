@@ -21,22 +21,36 @@ INSERT INTO staff_phone_num VALUES ('marthastew123', '1234567');
 INSERT INTO staff_email VALUES ('marthastew123',
 'marthas@gmail.com');
 
-INSERT INTO Flight VALUES ('Jet Blue', 3456, '18:19:03', '2023-08-05',  '23:19:03', '2023-08-05', 1, 2, 400, 'on-time'),
+INSERT INTO Flight VALUES ('Jet Blue', 3456, '18:19:03', '2023-08-05',  '23:19:03', '2023-08-05', 1, 2, 400, 3, 'on-time'),
                            
-('Jet Blue', 3894, '12:04:19', '2023-04-19',  '18:03:03', '2023-08-06', 2, 1, 1000, 'on-time'),
+('Jet Blue', 3894, '12:04:19', '2023-04-19',  '18:03:03', '2023-08-06', 2, 1, 1000, 1, 'on-time'),
                            
-('Jet Blue', 9353, '03:19:03', '2023-03-22',  '16:08:18', '2023-03-22', 1, 2, 297, 'delayed'),
+('Jet Blue', 9353, '03:19:03', '2023-03-22',  '16:08:18', '2023-03-22', 1, 2, 297, 2, 'delayed'),
 
-('Jet Blue', 10204, '05:27:35', '2023-05-17',  '08:56:18', '2023-05-17', 1, 3, 158, 'on-time');
+('Jet Blue', 10204, '05:27:35', '2023-05-17',  '08:56:18', '2023-05-17', 1, 3, 158, 3, 'on-time'),
 
-INSERT INTO Ticket(Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date,
+('Jet Blue', 58748, '05:27:35', '2023-05-05',  '08:56:18', '2023-05-05', 1, 3, 158, 2, 'on-time'),
+
+('Jet Blue', 9238, '15:19:03', '2023-05-06',  '17:19:03', '2023-05-06', 1, 2, 400, 3, 'on-time'),
+
+('Jet Blue', 9238, '15:19:03', '2023-07-04', '17:19:03', '2023-07-04', 1, 2, 400, 3, 'on-time'),
+
+('Jet Blue', 1298, '05:35:35', '2021-04-17', '06:56:12', '2021-04-17', 2, 3, 390, 1, 'delayer');
+
+INSERT INTO Ticket(Email, Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date,
 Purchase_date, Purchase_time, Card_type) VALUES
-('Jet Blue', 3456, '18:19:03', '2023-08-05',  'Mirna', 'Ashour', '2002-11-20', 2746728, 'Mirna Ashour', '2023-05-05', '2002-06-12', '02:06:12', 'debit'),
+('mirna@nyu.edu', 'Jet Blue', 3456, '18:19:03', '2023-08-05',  'Mirna', 'Ashour', '2002-11-20', 2746728, 'Mirna Ashour', '2023-05-05', '2002-06-12', '02:06:12', 'debit'),
 
-('Jet Blue', 3894, '12:04:19', '2023-04-19',  'Olivia', 'Marcelin', '2002-06-12', 3984275, 'Olivia Marcelin', '2010-02-22', '2023-08-06', '10:20:22', 'credit'),
+('olivia@nyu.edu', 'Jet Blue', 3894, '12:04:19', '2023-04-19',  'Olivia', 'Marcelin', '2002-06-12', 3984275, 'Olivia Marcelin', '2010-02-22', '2023-08-06', '10:20:22', 'credit'),
 
-('Jet Blue', 3894, '12:04:19', '2023-04-19', 'Jeff', 'Bezos', '1987-04-08', 398425, 'Olivia Marcelin', '2010-02-22', '2023-08-06', '10:20:22', 'debit'),
+('olivia@nyu.edu', 'Jet Blue', 3894, '12:04:19', '2023-04-19', 'Jeff', 'Bezos', '1987-04-08', 398425, 'Olivia Marcelin', '2010-02-22', '2023-08-06', '10:20:22', 'debit'),
 
-('Jet Blue', 9353, '03:19:03', '2023-03-22', 'Nisha', 'Ramanna', '2002-10-20', 2453489, 'Nisha Ramanna',  '2023-03-22', '2021-06-04', '21:16:04', 'debit');
+('nisha@nyu.edu', 'Jet Blue', 9353, '03:19:03', '2023-03-22', 'Nisha', 'Ramanna', '2002-10-20', 2453489, 'Nisha Ramanna',  '2023-03-22', '2021-06-04', '21:16:04', 'debit'),
 
-INSERT INTO Buys VALUES (1, 'nisha@nyu.edu'), (3, 'nisha@nyu.edu');
+('nisha@nyu.edu', 'Jet Blue', 58748, '05:27:35', '2023-05-05', 'Nisha', 'Ramanna', '2002-10-20', 2453489, 'Nisha Ramanna',  '2023-03-22', '2021-06-04', '21:16:04', 'debit'),
+
+('nisha@nyu.edu', 'Jet Blue', 1298, '05:35:35', '2021-04-17', 'Nisha', 'Ramanna', '2002-10-20', 2453489, 'Nisha Ramanna',  '2021-02-15', '2021-06-04', '21:16:04', 'debit'),
+
+('nisha@nyu.edu', 'Jet Blue', 9238, '15:19:03', '2023-05-06', 'Nisha', 'Ramanna', '2002-10-20', 2453489, 'Nisha Ramanna',  '2021-02-15', '2021-06-04', '21:16:04', 'debit'),
+
+('nisha@nyu.edu', 'Jet Blue', 9238, '15:19:03', '2023-07-04', 'Nisha', 'Ramanna', '2002-10-20', 2453489, 'Nisha Ramanna',  '2021-02-15', '2021-06-04', '21:16:04', 'debit');

@@ -16,11 +16,191 @@ conn = pymysql.connect(host='localhost',
                        cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def hello():
-	return render_template('index.html')
+	cursor = conn.cursor()
+	if request.method == 'POST':
+		source_city = request.form['source_city']
+		destination_city = request.form['destination_city']
+		source_airp = request.form['source_airp']
+		destination_airp = request.form['destination_airp']
+		depart_date = request.form['depart']
+		return_date = request.form['return']
+		trip_type = request.form['options']
+		if depart_date != '' and return_date != '':
+			if source_city != '':
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+				cursor.execute(query3, (source_city, destination_city, depart_date, return_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+					cursor.execute(query4, (source_city, destination_city, depart_date, return_date))
+					returning = cursor.fetchall()
+			else:
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+				cursor.execute(query3, (source_airp, destination_airp, depart_date, return_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+					cursor.execute(query4, (source_airp, destination_airp, depart_date, return_date))
+					returning = cursor.fetchall()
+		elif depart_date != '':
+			if source_city != '':
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s)'
+				cursor.execute(query3, (source_city, destination_city, depart_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s)'
+					cursor.execute(query4, (source_city, destination_city, depart_date))
+					returning = cursor.fetchall()
+			else:
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s)'
+				cursor.execute(query3, (source_airp, destination_airp, depart_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s)'
+					cursor.execute(query4, (source_airp, destination_airp, depart_date))
+					returning = cursor.fetchall()
+		elif return_date != '':
+			if source_city != '':
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Arrival_date = %s)'
+				cursor.execute(query3, (source_city, destination_city, return_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND Arrival_date = %s)'
+					cursor.execute(query4, (source_city, destination_city, return_date))
+					returning = cursor.fetchall()
+			else:
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Arrival_date = %s)'
+				cursor.execute(query3, (source_airp, destination_airp, return_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND Arrival_date = %s)'
+					cursor.execute(query4, (source_airp, destination_airp, return_date))
+					returning = cursor.fetchall()
+		else:
+			if source_city != '':
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s)'
+				cursor.execute(query3, (source_city, destination_city))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s)'
+					cursor.execute(query4, (source_city, destination_city))
+					returning = cursor.fetchall()
+			else:
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s)'
+				cursor.execute(query3, (source_airp, destination_airp))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s)'
+					cursor.execute(query4, (source_airp, destination_airp))
+					returning = cursor.fetchall()
+		conn.commit()
+		cursor.close()
+		return render_template('index.html', going=going, returning=returning, trip_type=trip_type)
+	going = 'None'
+	returning = 'None'
+	trip_type = 'None'
+	return render_template('index.html', going=going, returning=returning, trip_type=trip_type)
 
-
+# @app.route('/index')
+# def index():
+	# cursor = conn.cursor()
+	# if request.method == 'POST':
+	# 	source_city = request.form['source_city']
+	# 	destination_city = request.form['destination_city']
+	# 	source_airp = request.form['source_airp']
+	# 	destination_airp = request.form['destination_airp']
+	# 	depart_date = request.form['depart']
+	# 	return_date = request.form['return']
+	# 	trip_type = request.form['options']
+	# 	if depart_date != '' and return_date != '':
+	# 		if source_city != '':
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+	# 			cursor.execute(query3, (source_city, destination_city, depart_date, return_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+	# 				cursor.execute(query4, (source_city, destination_city, depart_date, return_date))
+	# 				returning = cursor.fetchall()
+	# 		else:
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+	# 			cursor.execute(query3, (source_airp, destination_airp, depart_date, return_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+	# 				cursor.execute(query4, (source_airp, destination_airp, depart_date, return_date))
+	# 				returning = cursor.fetchall()
+	# 	elif depart_date != '':
+	# 		if source_city != '':
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s)'
+	# 			cursor.execute(query3, (source_city, destination_city, depart_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s)'
+	# 				cursor.execute(query4, (source_city, destination_city, depart_date))
+	# 				returning = cursor.fetchall()
+	# 		else:
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s)'
+	# 			cursor.execute(query3, (source_airp, destination_airp, depart_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s)'
+	# 				cursor.execute(query4, (source_airp, destination_airp, depart_date))
+	# 				returning = cursor.fetchall()
+	# 	elif return_date != '':
+	# 		if source_city != '':
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Arrival_date = %s)'
+	# 			cursor.execute(query3, (source_city, destination_city, return_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND Arrival_date = %s)'
+	# 				cursor.execute(query4, (source_city, destination_city, return_date))
+	# 				returning = cursor.fetchall()
+	# 		else:
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Arrival_date = %s)'
+	# 			cursor.execute(query3, (source_airp, destination_airp, return_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND Arrival_date = %s)'
+	# 				cursor.execute(query4, (source_airp, destination_airp, return_date))
+	# 				returning = cursor.fetchall()
+	# 	else:
+	# 		if source_city != '':
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s)'
+	# 			cursor.execute(query3, (source_city, destination_city))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s)'
+	# 				cursor.execute(query4, (source_city, destination_city))
+	# 				returning = cursor.fetchall()
+	# 		else:
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s)'
+	# 			cursor.execute(query3, (source_airp, destination_airp))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s)'
+	# 				cursor.execute(query4, (source_airp, destination_airp))
+	# 				returning = cursor.fetchall()
+	# 	conn.commit()
+	# 	cursor.close()
+	# 	return render_template('index.html', going=going, returning=returning, trip_type=trip_type)		
 								##################################### LOGIN AND REGISTRATION CODE ##############################################
 
 #General login page route
@@ -202,17 +382,28 @@ def registerAuth_as():
 @app.route('/cus_home', methods =['GET', 'POST']) #, methods =['GET', 'POST']
 def cus_home():
 	email = 'None'
-	if 'Email' in session:
-		email = session['Email']
+	if 'username' in session:
+		email = session['username']
 	cursor = conn.cursor()
-	query = 'SELECT * From Ticket WHERE Ticket_ID in (SELECT Ticket_ID FROM Buys WHERE Email = %s)'
-	cursor.execute(query, (email))
+	# find upcoming flights
+	today_date = date.today()
+	time = datetime.now().strftime("%H:%M:%S")
+	query = 'SELECT * From Ticket WHERE Email = %s AND Departure_date > %s OR (Departure_date = %s AND Departure_time > %s)'
+	cursor.execute(query, (email, today_date, today_date, time))
 	data = cursor.fetchall()
+	# find past flights
+	query_past = 'SELECT * From Ticket WHERE Email = %s AND Departure_date < %s OR (Departure_date = %s AND Departure_time < %s) '
+	cursor.execute(query_past, (email, today_date, today_date, time))
+	past_flight = cursor.fetchall()
+	# find first name of customer
 	query2 = 'SELECT FirstName From Customer WHERE Email = %s'
 	cursor.execute(query2, (email))
 	data2 = cursor.fetchone()
-	query = 'SELECT*'
-	if request.method == 'POST':			
+	# find customer's tickets
+	query5 = 'SELECT * From Ticket WHERE Email = %s'
+	cursor.execute(query5, (email))
+	ticket = cursor.fetchall()
+	if request.method == 'POST':
 		source_city = request.form['source_city']
 		destination_city = request.form['destination_city']
 		source_airp = request.form['source_airp']
@@ -298,23 +489,67 @@ def cus_home():
 					returning = cursor.fetchall()
 		conn.commit()
 		cursor.close()
-		return render_template('cus_home.html', firstname=data2, flights=data, going=going, returning=returning, trip_type=trip_type)		
+		return render_template('cus_home.html', firstname=data2, future_flights=data, past_flights=past_flight, ticket=ticket, going=going, returning=returning, trip_type=trip_type)		
 	else:
 		going = 'None'
 		returning = 'None'
 		trip_type = 'None'
 		conn.commit()
 		cursor.close()
-		return render_template('cus_home.html', firstname=data2, flights=data, going=going, returning=returning, trip_type=trip_type)
+		return render_template('cus_home.html', firstname=data2, future_flights=data, past_flights=past_flight, ticket=ticket, going=going, returning=returning, trip_type=trip_type)
 
-# #Customer purchase ticket route
+# customer rate/comment route
+@app.route('/rate_comment', methods =['GET', 'POST'])
+def rate_comment():
+	if request.method=='POST':
+		Rating = request.form['Rating']
+		Comment = request.form['Comment']
+	cursor = conn.cursor(0)
+	Email = 'None'
+	if 'username' in session:
+		Email = session['username']
+	Airline_name = request.args.get('Airline_name')
+	Flight_num = request.args.get('Flight_num')
+	Departure_time = request.args.get('Departure_time')
+	Departure_date = request.args.get('Departure_date')
+	query = 'INSERT INTO Has_taken VALUES (%s, %s, %s, %s, %s, %s, %s)'
+	cursor.execute(query, (Email, Airline_name, Flight_num, Departure_time, Departure_date, Rating, Comment))
+	flash("Rating and comment successfully recorded.")
+	return redirect(url_for('cus_home'))
+
+
+# customer delete ticket route
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+	Email = 'None'
+	if 'username' in session:
+		Email = session['username']
+	cursor = conn.cursor()
+	Airline_name = request.args.get('Airline_name')
+	Flight_num = request.args.get('Flight_num')
+	Departure_time = request.args.get('Departure_time')
+	Departure_date = request.args.get('Departure_date')
+	# check if flight is more than 24 hours out*****
+	depart_date = date(int(Departure_date[0:4]), int(Departure_date[5:7]), int(Departure_date[8:10]))
+	depart_time = datetime.strptime(Departure_time, '%H:%M:%S')
+	today = date.today()
+	tomorrow = today + timedelta(days=1)
+	time = datetime.now().strftime("%H:%M:%S")
+	current_time = datetime.strptime(time, '%H:%M:%S')
+	if ((today <= depart_date <= tomorrow)):
+		if ((depart_date == tomorrow) and (depart_time <= current_time)):
+			flash("Cannot delete ticket- flight is less than 24 hours out.")
+			return redirect(url_for('cus_home'))
+	# *********
+	query = 'DELETE FROM Ticket WHERE Email = %s AND Airline_name = %s AND Flight_num = %s AND Departure_time = %s AND Departure_date = %s'
+	cursor.execute(query, (Email, Airline_name, Flight_num, Departure_time, Departure_date))
+	flash("Ticket successfully deleted")
+	return redirect(url_for('cus_home'))
+
+# Customer purchase ticket route
 @app.route('/purchase', methods=['GET', 'POST'])
 def purchase():
-	if request.method == 'POST':
-		Airline_name = request.form['Airline_name']
-		Flight_num = request.form['Flight_num']
-		Departure_time = request.form['Departure_time']
-		Departure_date = request.form['Departure_date']
+	if request.method=='POST':
 		FirstName = request.form['FirstName']
 		LastName = request.form['LastName']
 		Date_of_birth = request.form['Date_of_birth']
@@ -322,32 +557,78 @@ def purchase():
 		Name_on_card = request.form['Name_on_card']
 		Expiration_date = request.form['Expiration_date']
 		Card_type = request.form['Card_type']
-		Purchase_date = date.today()
-		time = datetime.now()
-		Purchase_time = time.strftime("%H:%M:%S")
-		cursor = conn.cursor()
-		query = 'INSERT INTO Ticket(Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-		cursor.execute(query, (Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type))
-		conn.commit()
-		cursor.close()
-		flash("Ticket successfully purchased")
-		return redirect(url_for('cus_home'))
-	return render_template('purchase.html')
+	cursor = conn.cursor()
+	Email = 'None'
+	if 'username' in session:
+		Email = session['username']
+	Airline_name = request.args.get('Airline_name')
+	Flight_num = request.args.get('Flight_num')
+	Departure_time = request.args.get('Departure_time')
+	Departure_date = request.args.get('Departure_date')
+	Purchase_date = date.today()
+	time = datetime.now()
+	Purchase_time = time.strftime("%H:%M:%S")
+	query = 'INSERT INTO Ticket(Email, Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+	cursor.execute(query, (Email, Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type))
+	flash("Ticket successfully purchased")
+	return redirect(url_for('cus_home'))
 
 
-# @app.route('/book', methods=['GET', 'POST'])
-# def post():
-# 	cursor = conn.cursor()
-# 	source = request.form['source']
-# 	destination = request.form['destination']
-# 	depart = request.form['depart']
-# 	ret = request.form['return']
-# 	query = 'SELECT * FROM Flight JOIN Airport ON Flight.Departure_Airport = Airport.Airport_ID WHERE name = %s'
-# 	cursor.execute(query, (source))
-# 	search = cursor.fetchall()
-# 	conn.commit()
-# 	cursor.close()
-# 	return redirect(url_for('home', search=search))
+# Customer track spending route
+@app.route('/track_spending', methods=['GET', 'POST'])
+def track_spending():
+	Email = 'None'
+	if 'username' in session:
+		Email = session['username']
+	cursor = conn.cursor()
+	if request.method == 'POST':
+		from_date = request.form['from']
+		until_date = request.form['until']
+	else:
+		# default is total money spent for last year
+		until_date_bef = date.today()
+		from_date = until_date_bef - timedelta(days=365)
+		until_date = str(until_date_bef)
+	query = 'SELECT sum(Base_ticket_price) FROM Flight as F NATURAL JOIN Ticket as T WHERE T.Email = %s AND T.Purchase_date >= %s AND T.Purchase_date <= %s'
+	cursor.execute(query, (Email, from_date, until_date))
+	total_cost = cursor.fetchone()
+	if total_cost['sum(Base_ticket_price)'] == None:
+		total_cost['sum(Base_ticket_price)'] = 0
+	# find cost for each month in the last six months
+	data_over_months = []
+	curr_date = date(int(until_date[0:4]), int(until_date[5:7]), int(until_date[8:10]))
+	if request.method == 'GET':
+		for i in range(6):
+			first_of_currmonth = curr_date.replace(day=1)
+			next_month = curr_date.replace(day=28) + timedelta(days=4)
+			last_of_currmonth = next_month - timedelta(days=next_month.day)
+			query = 'SELECT sum(Base_ticket_price) FROM Flight as F NATURAL JOIN Ticket as T WHERE T.Email = %s AND T.Purchase_date >= %s AND T.Purchase_date <= %s'
+			cursor.execute(query, (Email, first_of_currmonth, last_of_currmonth))
+			sum_for_month = cursor.fetchone()
+			if sum_for_month['sum(Base_ticket_price)'] == None:
+				sum_for_month['sum(Base_ticket_price)'] = 0
+			curr_month = last_of_currmonth.month
+			data_over_months.append((curr_month, sum_for_month['sum(Base_ticket_price)']))
+			curr_date = first_of_currmonth - timedelta(days=18)
+	else:
+		end_date = date(int(from_date[0:4]), int(from_date[5:7]), int(from_date[8:10])).replace(day=1)
+		first_of_currmonth = curr_date.replace(day=1)
+		while first_of_currmonth != end_date:
+			first_of_currmonth = curr_date.replace(day=1)
+			next_month = curr_date.replace(day=28) + timedelta(days=4)
+			last_of_currmonth = next_month - timedelta(days=next_month.day)
+			query = 'SELECT sum(Base_ticket_price) FROM Flight as F NATURAL JOIN Ticket as T WHERE T.Email = %s AND T.Purchase_date >= %s AND T.Purchase_date <= %s'
+			cursor.execute(query, (Email, first_of_currmonth, last_of_currmonth))
+			sum_for_month = cursor.fetchone()
+			if sum_for_month['sum(Base_ticket_price)'] == None:
+				sum_for_month['sum(Base_ticket_price)'] = 0
+			curr_month = last_of_currmonth.month
+			data_over_months.append((curr_month, sum_for_month['sum(Base_ticket_price)']))
+			curr_date = first_of_currmonth - timedelta(days=18)
+
+	return render_template('track_spending.html', total_cost=total_cost, data_over_months=data_over_months, from_date=from_date, until_date=until_date)
+
+
 
 								######################################### AIRLINE STAFF CODE #############################################
 
