@@ -8,9 +8,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-		            #    port = 8889,
+		               port = 8889,
                        user='root',
-                       password='',
+                       password='root',
                        db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -197,20 +197,43 @@ def registerAuth_as():
 
 	
 									######################################## CUSTOMER CODE ################################################
+# def helper(cursor, source, destination, depart_date, return_date, trip_type):
+# 	cursor = conn.cursor()
+# 	query = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+# 	if depart_date != '' and return_date != '':
+# 		cursor.execute(query, (source, destination, depart_date, return_date))
+# 	going = cursor.fetchall()
+# 	returning = 'None'
+# 	if trip_type == 'option2': # trip_type = roundtrip
+# 		query2 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+# 		cursor.execute(query2, (source, destination, depart_date, return_date))
+# 		returning = cursor.fetchall()
+# 	conn.commit()
+# 	cursor.close()
+# 	return (going, returning)
 
 #General home page for customers
 @app.route('/cus_home', methods =['GET', 'POST']) #, methods =['GET', 'POST']
 def cus_home():
 	email = 'None'
-	if 'Email' in session:
-		email = session['Email']
+	if 'username' in session:
+		email = session['username']
 	cursor = conn.cursor()
-	query = 'SELECT * From Ticket WHERE Ticket_ID in (SELECT Ticket_ID FROM Buys WHERE Email = %s)'
-	cursor.execute(query, (email))
+	# find upcoming flights
+	today_date = date.today()
+	time = datetime.now().strftime("%H:%M:%S")
+	query = 'SELECT * From Ticket WHERE Email = %s AND Departure_date > %s OR (Departure_date = %s AND Departure_time > %s)'
+	cursor.execute(query, (email, today_date, today_date, time))
 	data = cursor.fetchall()
+	# find past flights
+	query_past = 'SELECT * From Ticket WHERE Email = %s AND Departure_date < %s OR (Departure_date = %s AND Departure_time < %s) '
+	cursor.execute(query_past, (email, today_date, today_date, time))
+	past_flight = cursor.fetchall()
+	# find first name of customer
 	query2 = 'SELECT FirstName From Customer WHERE Email = %s'
 	cursor.execute(query2, (email))
 	data2 = cursor.fetchone()
+	# find customer's tickets
 	query5 = 'SELECT * From Ticket WHERE Email = %s'
 	cursor.execute(query5, (email))
 	ticket = cursor.fetchall()
@@ -232,6 +255,8 @@ def cus_home():
 					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
 					cursor.execute(query4, (source_city, destination_city, depart_date, return_date))
 					returning = cursor.fetchall()
+				# (going, returning) = helper(cursor, source_city, destination_city, depart_date, return_date, trip_type)
+				# print("hi", (going, returning))
 			else:
 				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
 				cursor.execute(query3, (source_airp, destination_airp, depart_date, return_date))
@@ -241,6 +266,7 @@ def cus_home():
 					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
 					cursor.execute(query4, (source_airp, destination_airp, depart_date, return_date))
 					returning = cursor.fetchall()
+				# going, returning = helper(cursor, source_airp, destination_airp, depart_date, return_date, trip_type)
 		elif depart_date != '':
 			if source_city != '':
 				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s)'
@@ -300,51 +326,115 @@ def cus_home():
 					returning = cursor.fetchall()
 		conn.commit()
 		cursor.close()
-		return render_template('cus_home.html', firstname=data2, flights=data, ticket=ticket, going=going, returning=returning, trip_type=trip_type)		
+		return render_template('cus_home.html', firstname=data2, future_flights=data, past_flights=past_flight, ticket=ticket, going=going, returning=returning, trip_type=trip_type)		
 	else:
 		going = 'None'
 		returning = 'None'
 		trip_type = 'None'
 		conn.commit()
 		cursor.close()
-		return render_template('cus_home.html', firstname=data2, flights=data, ticket=ticket, going=going, returning=returning, trip_type=trip_type)
+		return render_template('cus_home.html', firstname=data2, future_flights=data, past_flights=past_flight, ticket=ticket, going=going, returning=returning, trip_type=trip_type)
 
-# #Customer purchase ticket route
+# customer rate/comment route
+@app.route('/rate_comment', methods =['GET', 'POST'])
+def rate_comment(): #Airline_name, Flight_num, Departure_time, Departure_date, Rating, Comment
+	if request.method=='POST':
+		Rating = request.form['Rating']
+		Comment = request.form['Comment']
+	cursor = conn.cursor(0)
+	Email = 'None'
+	if 'username' in session:
+		Email = session['username']
+	Airline_name = request.args.get('Airline_name')
+	Flight_num = request.args.get('Flight_num')
+	Departure_time = request.args.get('Departure_time')
+	Departure_date = request.args.get('Departure_date')
+	query = 'INSERT INTO Has_taken VALUES (%s, %s, %s, %s, %s, %s, %s)'
+	cursor.execute(query, (Email, Airline_name, Flight_num, Departure_time, Departure_date, Rating, Comment))
+	flash("Rating and comment successfully recorded.")
+	return redirect(url_for('cus_home'))
+
+
+# customer delete ticket route
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+	Email = 'None'
+	if 'username' in session:
+		Email = session['username']
+	cursor = conn.cursor()
+	Airline_name = request.args.get('Airline_name')
+	Flight_num = request.args.get('Flight_num')
+	Departure_time = request.args.get('Departure_time')
+	Departure_date = request.args.get('Departure_date')
+	# check if flight is more than 24 hours out*****
+	today = date.today()
+	time = datetime.now()
+	Purchase_time = time.strftime("%H:%M:%S")
+	# *********
+	query = 'DELETE FROM Ticket WHERE Email = %s AND Airline_name = %s AND Flight_num = %s AND Departure_time = %s AND Departure_date = %s'
+	cursor.execute(query, (Email, Airline_name, Flight_num, Departure_time, Departure_date))
+	flash("Ticket successfully deleted")
+	return redirect(url_for('cus_home'))
+
+# Customer purchase ticket route
 @app.route('/purchase', methods=['GET', 'POST'])
 def purchase():
-	if request.method == 'POST':
-		Email = request.form['Email']
-		cursor = conn.cursor()
-		query = 'SELECT * From Customer WHERE  Email = %s'
-		cursor.execute(query, (Email))
-		data = cursor.fetchone()
-		if data == None:
-			flash("Ticket not successfully purchased- given email was unregistered. Please register email here.")
-			return render_template('cus_reg.html')
-		else:
-			FirstName = data['FirstName']
-			LastName = data['LastName']
-			Date_of_birth = data['Date_of_birth']
-		Airline_name = request.form['Airline_name']
-		Flight_num = request.form['Flight_num']
-		Departure_time = request.form['Departure_time']
-		Departure_date = request.form['Departure_date']
+	if request.method=='POST':
+		FirstName = request.form['FirstName']
+		LastName = request.form['LastName']
+		Date_of_birth = request.form['Date_of_birth']
 		Card_num = request.form['Card_num']
 		Name_on_card = request.form['Name_on_card']
 		Expiration_date = request.form['Expiration_date']
 		Card_type = request.form['Card_type']
-		Purchase_date = date.today()
-		time = datetime.now()
-		Purchase_time = time.strftime("%H:%M:%S")
-		cursor = conn.cursor()
-		query = 'INSERT INTO Ticket(Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-		cursor.execute(query, (Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type))
-		conn.commit()
-		cursor.close()
-		flash("Ticket successfully purchased")
-		return redirect(url_for('cus_home'))
-	return render_template('purchase.html')
+	cursor = conn.cursor(0)
+	Email = 'None'
+	if 'username' in session:
+		Email = session['username']
+	Airline_name = request.args.get('Airline_name')
+	Flight_num = request.args.get('Flight_num')
+	Departure_time = request.args.get('Departure_time')
+	Departure_date = request.args.get('Departure_date')
+	Purchase_date = date.today()
+	time = datetime.now()
+	Purchase_time = time.strftime("%H:%M:%S")
+	query = 'INSERT INTO Ticket(Email, Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+	cursor.execute(query, (Email, Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type))
+	flash("Ticket successfully purchased")
+	return redirect(url_for('cus_home'))
 
+# def purchase():
+# 	if request.method == 'POST':
+# 		Email = request.form['Email']
+# 		cursor = conn.cursor()
+# 		query = 'SELECT * From Customer WHERE  Email = %s'
+# 		cursor.execute(query, (Email))
+# 		data = cursor.fetchone()
+# 		if data == None:
+# 			flash("Ticket not successfully purchased- given email was unregistered. Please register email here.")
+# 			return render_template('cus_reg.html')
+# 		# FirstName = data['FirstName']
+# 		# LastName = data['LastName']
+# 		# Date_of_birth = data['Date_of_birth']
+# 		Airline_name = request.form['Airline_name']
+# 		Flight_num = request.form['Flight_num']
+# 		Departure_time = request.form['Departure_time']
+# 		Departure_date = request.form['Departure_date']
+# 		# Card_num = request.form['Card_num']
+# 		# Name_on_card = request.form['Name_on_card']
+# 		# Expiration_date = request.form['Expiration_date']
+# 		# Card_type = request.form['Card_type']
+# 		Purchase_date = date.today()
+# 		time = datetime.now()
+# 		Purchase_time = time.strftime("%H:%M:%S")
+# 		cursor = conn.cursor()
+# 		query = 'INSERT INTO Ticket(Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+# 		cursor.execute(query, (Airline_name, Flight_num, Departure_time, Departure_date, FirstName, LastName, Date_of_birth, Card_num, Name_on_card, Expiration_date, Purchase_date, Purchase_time, Card_type))
+# 		conn.commit()
+# 		cursor.close()
+# 		flash("Ticket successfully purchased")
+# 		return redirect(url_for('cus_home'))
+# 	return render_template('purchase.html')
 
 # @app.route('/book', methods=['GET', 'POST'])
 # def post():

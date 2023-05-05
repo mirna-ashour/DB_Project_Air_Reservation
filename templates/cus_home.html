@@ -20,21 +20,66 @@
     }
 </style>
 <br>
-<h2>View Your Flights</h2>
+<h2>View Your Upcoming Flights</h2>
 <table class = "table">
     <th>Airline Name</th>
     <th>Flight Number</th>
     <th>Departure Time</th>
     <th>Departure Date</th>
-{% for row in flights %}
+	<th>Purchase Date</th>
+	<th>Purchase Time</th>
+	<th>Ticketholder</th>
+	<th>Delete Ticket</th>
+{% for row in future_flights %}
     <tr>
         <td>{{row['Airline_name']}}</td>
         <td>{{row['Flight_num']}}</td>
         <td>{{row['Departure_time']}}</td>
         <td>{{row['Departure_date']}}</td>
+		<td>{{row['Purchase_date']}}</td>
+		<td>{{row['Purchase_time']}}</td>
+		<td>{{row['FirstName']}} {{row['LastName']}}</td>
+		<td>
+			<a href="{{ url_for('delete', Airline_name=row['Airline_name'], Flight_num=row['Flight_num'], Departure_time=row['Departure_time'], Departure_date=row['Departure_date'])}}">
+			<input type="submit" value = "Delete" /> </br>
+		</td>
     </tr>
 {% endfor %}
 </table>
+
+
+<br>
+<h2>View Your Past Flights</h2>
+<table class = "table">
+    <th>Airline Name</th>
+    <th>Flight Number</th>
+    <th>Departure Time</th>
+    <th>Departure Date</th>
+	<th>Rate/Comment</th>
+{% for row in past_flights %}
+    <tr>
+        <td>{{row['Airline_name']}}</td>
+        <td>{{row['Flight_num']}}</td>
+        <td>{{row['Departure_time']}}</td>
+        <td>{{row['Departure_date']}}</td>
+		<td>
+		  <form action="{{url_for('rate_comment', Airline_name=row['Airline_name'], Flight_num=row['Flight_num'], Departure_time=row['Departure_time'], Departure_date=row['Departure_date'])}}" method="POST">
+			<div class="row">
+				<div class="col-4">
+					<input type="number" class="form-control" name = "Rating" placeholder="rating (1-10)" required/>
+				</div>
+				<div class="col-6">
+					<input type="text" class="form-control" name = "Comment" placeholder="comment" required/>
+				</div>
+			</div>
+			<input type="submit" value = "Post" /> </br>
+		  </form>
+		</td>
+    </tr>
+{% endfor %}
+</table>
+<br>
+
 
 <h2>Search For Flights by Airport Name or City</h2>
 <form action="/cus_home" method="POST">
@@ -62,7 +107,6 @@
 		<input class="form-check-input" type="radio" name="options" id="inlineRadio2" value="option2">
 		<label class="form-check-label" for="inlineRadio2">Round Trip</label>
 	  </div>
-	<br><br>
 	<div class="row">
 		<div class="col-4">
 			<b>Departure Date</b>
@@ -79,7 +123,7 @@
    			<input type="date" name = "return" placeholder="Return"/>
 		</div>
 	</div>
-    <br>
+	<br>
     <input type="submit" value = "Search" /> </br>
 <br>
 </form>
@@ -115,7 +159,30 @@
             <td>{{row['Name']}}</td>
             <td>{{row['B.Name']}}</td>
 			<td>
-				<a href="/purchase">Purchase</a>
+				<form action="{{url_for('purchase', Airline_name=row['Airline_name'], Flight_num=row['Flight_num'], Departure_time=row['Departure_time'], Departure_date=row['Departure_date'])}}" method="POST">
+					  <div class="col">
+						<input type="text" class="form-control" name = "FirstName" placeholder="first name" required/>
+					  </div>
+					  <div class="col">
+						<input type="text" class="form-control" name = "LastName" placeholder="last name" required/>
+					  </div>
+					  <div class="col">
+						<input type="text" class="form-control" name = "Date_of_birth" placeholder="date of birth (YYYY-MM-DD)" required/>
+					  </div>
+						<div class="col">
+						  <input type="text" class="form-control" name = "Card_num" placeholder="card number" required/>
+						</div>
+						<div class="col">
+							<input type="text" class="form-control" name = "Name_on_card" placeholder="name on card" required/>
+						  </div>
+						<div class="col">
+						  <input type="text" class="form-control" name = "Expiration_date" placeholder="expiration date (YYYY-MM-DD)" required/>
+						</div>
+						<div class="col">
+						  <input type="text" class="form-control" name = "Card_type" placeholder="card type" required/>
+						</div>
+					<input type="submit" value = "Purchase" />
+				  </form>
 			</td>
         </tr>
     {% endfor %}
@@ -147,42 +214,44 @@
 				<td>{{row['Name']}}</td>
 				<td>{{row['B.Name']}}</td>
 				<td>
-					<a href="/purchase">Purchase</a>
+					<form action="{{url_for('purchase', Airline_name=row['Airline_name'], Flight_num=row['Flight_num'], Departure_time=row['Departure_time'], Departure_date=row['Departure_date'])}}" method="POST">
+						<div class="col">
+						  <input type="text" class="form-control" name = "FirstName" placeholder="first name" required/>
+						</div>
+						<div class="col">
+						  <input type="text" class="form-control" name = "LastName" placeholder="last name" required/>
+						</div>
+						<div class="col">
+						  <input type="text" class="form-control" name = "Date_of_birth" placeholder="date of birth (YYYY-MM-DD)" required/>
+						</div>
+						  <div class="col">
+							<input type="text" class="form-control" name = "Card_num" placeholder="card number" required/>
+						  </div>
+						  <div class="col">
+							  <input type="text" class="form-control" name = "Name_on_card" placeholder="name on card" required/>
+							</div>
+						  <div class="col">
+							<input type="text" class="form-control" name = "Expiration_date" placeholder="expiration date (YYYY-MM-DD)" required/>
+						  </div>
+						  <div class="col">
+							<input type="text" class="form-control" name = "Card_type" placeholder="card type" required/>
+						  </div>
+					  <input type="submit" value = "Purchase" />
+					</form>
 				</td>
 			</tr>
 		{% endfor %}
 		</table>
 	{% endif %}
 {% endif %}
+<br>
 
-<h2>View Your Tickets</h2>
-<table class = "table">
-    <th>Airline Name</th>
-    <th>Flight Number</th>
-    <th>Departure Time</th>
-    <th>Departure Date</th>
-	<th>Purchase Date</th>
-	<th>Purchase Time</th>
-	<th>Delete Ticket</th>
-{% for row in ticket %}
-    <tr>
-        <td>{{row['Airline_name']}}</td>
-        <td>{{row['Flight_num']}}</td>
-        <td>{{row['Departure_time']}}</td>
-        <td>{{row['Departure_date']}}</td>
-		<td>{{row['Purchase_date']}}</td>
-		<td>{{row['Purchase_time']}}</td>
-		<td><form action="/cus_home" method="POST">
-			  <div class="form-check">
-				<input type="checkbox" value = "1" name="mycheckbox">
-			  </div>
-			  <input type="submit" value = "Submit" />
-			</form>
-		</td>
-    </tr>
-{% endfor %}
-</table>
+<h2>Track My Spending</h2>
 
+Default view will be total amount of money spent in the past year and a bar
+chart/table showing month wise money spent for last 6 months. He/she will also have option to specify
+a range of dates to view total amount of money spent within that range and a bar chart/table showing
+month wise money spent within that range.
 
 <a href="/logout">Logout</a>
 {% endblock %}
