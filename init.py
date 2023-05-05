@@ -1,5 +1,5 @@
 #Import Flask Library
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from flask import Flask, render_template, request, session, url_for, redirect, flash
 import pymysql.cursors
 
@@ -8,9 +8,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-		            #    port = 8889,
+		               port = 8889,
                        user='root',
-                       password='',
+                       password='root',
                        db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -211,10 +211,8 @@ def cus_home():
 	query2 = 'SELECT FirstName From Customer WHERE Email = %s'
 	cursor.execute(query2, (email))
 	data2 = cursor.fetchone()
-	query5 = 'SELECT * From Ticket WHERE Email = %s'
-	cursor.execute(query5, (email))
-	ticket = cursor.fetchall()
-	if request.method == 'POST':
+	query = 'SELECT*'
+	if request.method == 'POST':			
 		source_city = request.form['source_city']
 		destination_city = request.form['destination_city']
 		source_airp = request.form['source_airp']
@@ -300,35 +298,26 @@ def cus_home():
 					returning = cursor.fetchall()
 		conn.commit()
 		cursor.close()
-		return render_template('cus_home.html', firstname=data2, flights=data, ticket=ticket, going=going, returning=returning, trip_type=trip_type)		
+		return render_template('cus_home.html', firstname=data2, flights=data, going=going, returning=returning, trip_type=trip_type)		
 	else:
 		going = 'None'
 		returning = 'None'
 		trip_type = 'None'
 		conn.commit()
 		cursor.close()
-		return render_template('cus_home.html', firstname=data2, flights=data, ticket=ticket, going=going, returning=returning, trip_type=trip_type)
+		return render_template('cus_home.html', firstname=data2, flights=data, going=going, returning=returning, trip_type=trip_type)
 
 # #Customer purchase ticket route
 @app.route('/purchase', methods=['GET', 'POST'])
 def purchase():
 	if request.method == 'POST':
-		Email = request.form['Email']
-		cursor = conn.cursor()
-		query = 'SELECT * From Customer WHERE  Email = %s'
-		cursor.execute(query, (Email))
-		data = cursor.fetchone()
-		if data == None:
-			flash("Ticket not successfully purchased- given email was unregistered. Please register email here.")
-			return render_template('cus_reg.html')
-		else:
-			FirstName = data['FirstName']
-			LastName = data['LastName']
-			Date_of_birth = data['Date_of_birth']
 		Airline_name = request.form['Airline_name']
 		Flight_num = request.form['Flight_num']
 		Departure_time = request.form['Departure_time']
 		Departure_date = request.form['Departure_date']
+		FirstName = request.form['FirstName']
+		LastName = request.form['LastName']
+		Date_of_birth = request.form['Date_of_birth']
 		Card_num = request.form['Card_num']
 		Name_on_card = request.form['Name_on_card']
 		Expiration_date = request.form['Expiration_date']
@@ -486,7 +475,8 @@ def add_airport_auth():
 def flight_ratings():
 	return render_template('/staff/flight_ratings.html')
 
-@app.route('/staff/flight_ratings_auth')
+#CODE COMPLETE BUT ERROR 
+@app.route('/staff/flight_ratings_auth', methods=['GET', 'POST'])
 def flight_ratings_auth():
 	error = None
 	showRatings = False
@@ -497,14 +487,14 @@ def flight_ratings_auth():
 	airline = session['airline']
 
 	cursor = conn.cursor()
-	query1 = 'SELECT Flight_num, avg(Rate) as Avg_rating FROM Has_taken WHERE Airline_name = %s AND Flight_num = %s AND Departure_date = %s AND Departure_time = %s GROUP BY Flight_num)'
+	query1 = 'SELECT Flight_num, avg(Rate) as Avg_rating FROM Has_taken WHERE Airline_name = %s AND Flight_num = %s AND Departure_date = %s AND Departure_time = %s GROUP BY Flight_num'
 	cursor.execute(query1, (airline, flightNum, departureDate, departureTime))
 	data1 = cursor.fetchall()
 	data2 = None
 
 	if(data1):
 		if(showRatings == "true"):
-			query2 = 'SELECT FirstName, LastName, Email, Rate, Comment FROM Has_taken NATURAL JOIN Customer WHERE Airline_name = %s AND Flight_num = %s AND Departure_date = %s AND Departure_time = %s)' 
+			query2 = 'SELECT FirstName, LastName, Email, Rate, Comment FROM Has_taken NATURAL JOIN Customer WHERE Airline_name = %s AND Flight_num = %s AND Departure_date = %s AND Departure_time = %s' 
 			cursor.execute(query2, (airline, flightNum, departureDate, departureTime))
 			data2 = cursor.fetchall()
 	else:
@@ -512,94 +502,80 @@ def flight_ratings_auth():
 
 	return render_template('staff/flight_ratings.html', avg_rating=data1, all_ratings=data2, error=error)
 
-@app.route('/staff/freq_cust')
+#CONFUSION WITH BUYS TABLE AND EMAILS 
+@app.route('/staff/freq_cust', methods=['GET', 'POST'])
 def freq_cust():
+	airline = session['airline']
+
+	# today = datetime.now()
+	# this_year = today.year
+	# this_year_start = datetime(this_year, 1, 1)
+
+	# cursor = conn.cursor()
+	# query1 = "SELECT max(num_tickets) FROM (SELECT FirstName, LastName, Email, count(Ticket_ID) as num_tickets FROM Buys NATURAL JOIN Ticket WHERE Airline_name = %s AND Purchase_date >= %s GROUP BY Email)"
+	# cursor.execute(query1, (airline, this_year_start))
+	# data1 = cursor.fetchall()
+
 	return render_template('staff/freq_cust.html')
 
-@app.route('/freq_cust_auth', methods=['GET', 'POST'])
-def freq_cust_auth():
-	return render_template('staff/freq_cust.html')
-
-@app.route('/staff/reports')
+#WORKS
+@app.route('/staff/reports', methods=['GET', 'POST'])
 def reports():
-	return render_template('staff/reports.html')
+	error = None
+	if request.method == 'POST':
+		startDate = request.form['startDate']
+		endDate = request.form['endDate']
+		airline = session['airline']
 
-@app.route('/reports_auth', methods=['GET', 'POST'])
-def reports_auth():
-	return render_template('staff/reports.html')
+		cursor = conn.cursor()
+		query = "SELECT count(Ticket_ID) as num_tickets FROM Ticket WHERE Airline_name = %s AND Purchase_date >= %s AND Purchase_date <= %s GROUP BY Airline_name"
+		cursor.execute(query, (airline, startDate, endDate))
+		data = cursor.fetchone()
+		conn.commit()
+		cursor.close()
+		if(data):
+			return render_template('staff/reports.html', num_tickets=data['num_tickets'], error=error)
+		else:
+			error = "No tickets found in that range."
+			return render_template('staff/reports.html', error=error)
+	else:
+		return render_template('staff/reports.html', error=error, num_tickets='')
 
-@app.route('/revenue')
+@app.route('/staff/revenue')
 def revenue():
-	return render_template('staff/revenue.html')
+	error = None
+	airline = session['airline']
 
-@app.route('/revenue_auth', methods=['GET', 'POST'])
-def revenue_auth():
-	return render_template('staff/revenue.html')
+	today = date.today()
+	'''lastMonth = today - timedelta(days=30)
+	lastYear = today - timedelta(days=365)'''
 
+	one_month_ago = today.month - 1
+	last_month = date(today.year, one_month_ago, today.day)
+	one_year_ago = today.year - 1
+	last_year = date(one_year_ago, today.month, today.day)
 
-
-
-
-
-
-
-"""
-@app.route('/change_status', methods=['GET', 'POST'])
-def change_status():
-	flightNum = request.form['flightNum']
-	airline = request.form['airlineName']
-	departDate = request.form['departDate']
-	departTime = request.form['departTime']
-	statusUpdate = request.form['newStatus']
-
+	#COME BACK: Join with Tickets??? Must find sum of each flight's (num_of_ticket_sold * base_ticket_price)
 	cursor = conn.cursor()
-	query = 'UPDATE Flight SET Status = %s WHERE Flight_num = %s AND Airline_name = %s AND Departure_date = %s AND Departure_time = %s'
-	values = (statusUpdate, flightNum, airline, departDate, departTime)
-	cursor.execute(query, values)
+	query1 = "SELECT sum(Base_ticket_price) as revenue FROM Flight WHERE Airline_name = %s AND Purchase_date >= %s AND Purchase_date <= %s GROUP BY Airline_name"
+	cursor.execute(query1, (airline, last_month, today))
+	data1 = cursor.fetchone()
 	conn.commit()
 	cursor.close()
-	return redirect(url_for('staff/change_status'))
-"""
 
-"""
-@app.route('/staff/add_airport', methods=['GET', 'POST'])
-def add_airport():
-	name = request.form['name']
-	city = request.form['city']
-	country = request.form['country']
-	ap_type = request.form['ap_type']
-
-	cursor = conn.cursor()
-	query = 'INSERT INTO Airport VALUES(%s, %s, %s, %s)'
-	values =(name, city, country, ap_type)
-	cursor.execute(query, values)
+	query2 = "SELECT sum(Base_ticket_price) as revenue FROM Flight WHERE Airline_name = %s AND Purchase_date >= %s AND Purchase_date <= %s GROUP BY Airline_name"
+	cursor.execute(query2, (airline, last_year, today))
+	data2 = cursor.fetchone()
 	conn.commit()
 	cursor.close()
-	return redirect(url_for('staff/add_airport'))
-"""
-"""
-@app.route('/staff/add_airplane', methods=['GET', 'POST'])
-def add_airplane():
-	cursor = conn.cursor()
 
-	username = session['uid']
-	query = 'SELECT Airline_name FROM Airline_Staff WHERE Username=%s'
-	cursor.execute(query, (username))
-	data = cursor.fetchone()
-	airline = data['Airline_name'] #!!!!
+	if(data1 and data2):
+		return render_template('staff/revenue.html', revenueMonth=data1['revenue'], revenueYear=data2['revenue'])
+	elif( (data1 == None) and data2):
+		return render_template('staff/revenue.html', revenueMonth=0, revenueYear=data2['revenue'])
+	else:
+		return render_template('staff/revenue.html', revenueMonth=0, revenueYear=0)
 
-	numOfSeats = request.form['numOfSeats']
-	manufactureDate = request.form['manufactureDate']
-	manufacturer = request.form['manufacturer']
-	age = request.form['age'] #maybe we should do a function that calculates this?
-
-	query = 'INSERT INTO Airplane VALUES(%s, %s, %s, %s, %s)'
-	values = (airline, numOfSeats, manufacturer, manufactureDate, age)
-	cursor.execute(query, values)
-	conn.commit()
-	cursor.close()
-	return redirect(url_for('staff/add_airplane'))
-"""
 		
 app.secret_key = 'some key that you will never guess'
 #Run the app on localhost port 5000
