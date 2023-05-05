@@ -2,17 +2,49 @@
 
 {% block body %}
 
-<h3>Most frequent customer in the last year:</h3>
-<p><b>Name:</b></p>
 
+<h3>Most frequent customer(s) in the last year:</h3>
+{% if most_freq != None %}
+<table class = "table">
+    <th>Email</th>
+    <th>Number of flights taken</th>
+{% for row in most_freq %}
+    <tr>
+        <td>{{ row['Email'] }}</td>
+        <td>{{ row['max_num_tickets'] }}</td>
+    </tr>
+{% endfor %}
+</table>
+{% else %}  
+<br><br>
+<p class="error"><strong>Error:</strong> No customers to show.</p>
+{% endif %}
 
+<br><br>
+<h3>Enter flight taken by customer:</h3>
 <form action="/staff/freq_cust" method="POST" class="col-3">
     <input type="email" class="form-control" name = "email" placeholder="Customer email" required/> </br>
 
 	<input class="btn btn-primary" type="submit" value = "Search" />
-</form>
+</form><br><br>
 
 
+{% if cust_flights != None %}
+<h2>Flights for email: {{ email }}</h2>
+<table class = "table">
+    <th>Flight numbers:</th>
+{% for row in cust_flights %}
+    <tr>
+        <td>{{row['Flight_num']}}</td>
+    </tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% if error %}
+<br><br>
+<p class="error"><strong>Error:</strong> {{error}}</p>
+{% endif %}
 
 <br><br>
 <a href="/logout">Logout</a>

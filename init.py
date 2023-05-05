@@ -8,9 +8,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-		               port = 8889,
+		            #    port = 8889,
                        user='root',
-                       password='root',
+                       password='',
                        db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -421,7 +421,7 @@ def change_status_auth():
 	airline = request.form['airlineName']
 	departDate = request.form['departDate']
 	departTime = request.form['departTime']
-	statusUpdate = request.form['newStatus']
+	statusUpdate = request.form['newStatus'] 	#should make this a radio button
 
 	cursor = conn.cursor()
 	query = 'UPDATE Flight SET Status = %s WHERE Flight_num = %s AND Airline_name = %s AND Departure_date = %s AND Departure_time = %s'
@@ -443,7 +443,7 @@ def add_airplane_auth():
 	numOfSeats = request.form['numOfSeats']
 	manufactureDate = request.form['manufactureDate']
 	manufacturer = request.form['manufacturer']
-	age = request.form['age'] #maybe we should do a function that calculates this?
+	age = request.form['age'] 		#maybe we should do a function that calculates this? -> yes 
 
 	query = 'INSERT INTO Airplane VALUES(%s, %s, %s, %s, %s)'
 	values = (airline, numOfSeats, manufacturer, manufactureDate, age)
@@ -474,8 +474,7 @@ def add_airport_auth():
 @app.route('/staff/flight_ratings')
 def flight_ratings():
 	return render_template('/staff/flight_ratings.html')
-
-#CODE COMPLETE BUT ERROR 
+ 
 @app.route('/staff/flight_ratings_auth', methods=['GET', 'POST'])
 def flight_ratings_auth():
 	error = None
@@ -505,18 +504,36 @@ def flight_ratings_auth():
 #CONFUSION WITH BUYS TABLE AND EMAILS 
 @app.route('/staff/freq_cust', methods=['GET', 'POST'])
 def freq_cust():
+	error = None
 	airline = session['airline']
+	data1 = None
 
-	# today = datetime.now()
-	# this_year = today.year
-	# this_year_start = datetime(this_year, 1, 1)
+	today = date.today()
+	this_year = today.year
+	this_year_start = date(this_year, 1, 1)
 
-	# cursor = conn.cursor()
-	# query1 = "SELECT max(num_tickets) FROM (SELECT FirstName, LastName, Email, count(Ticket_ID) as num_tickets FROM Buys NATURAL JOIN Ticket WHERE Airline_name = %s AND Purchase_date >= %s GROUP BY Email)"
-	# cursor.execute(query1, (airline, this_year_start))
-	# data1 = cursor.fetchall()
+	cursor = conn.cursor()
+	createView = "CREATE VIEW view_ticket_num AS (SELECT Email, count(Ticket_ID) as num_tickets FROM Ticket WHERE Airline_name = %s AND Purchase_date >= %s GROUP BY Email)"
+	cursor.execute(createView, (airline, this_year_start))
+	query1 = "SELECT Email, MAX(num_tickets) as max_num_tickets FROM view_ticket_num"
+	cursor.execute(query1)
+	data1 = cursor.fetchall()
+	deleteView = "DROP view view_ticket_num"
+	cursor.execute(deleteView)
 
-	return render_template('staff/freq_cust.html')
+	if(request.method == 'POST'):
+		custEmail = request.form['email']
+		cursor = conn.cursor()
+		query2 = "SELECT Flight_num, FirstName, LastName, Email FROM Ticket NATURAL JOIN Flight WHERE Airline_name = %s AND Email = %s AND Arrival_date < %s"
+		cursor.execute(query2, (airline, custEmail, today))
+		data2 = cursor.fetchall()
+		conn.commit()
+		cursor.close()
+
+		if(data2):
+			return render_template('staff/freq_cust.html', most_freq=data1, cust_flights=data2, email=custEmail, error=error)
+		error = "There are no flights to view for this customer."
+	return render_template('staff/freq_cust.html', most_freq=data1, error=error, cust_flights=None)
 
 #WORKS
 @app.route('/staff/reports', methods=['GET', 'POST'])
@@ -555,7 +572,9 @@ def revenue():
 	one_year_ago = today.year - 1
 	last_year = date(one_year_ago, today.month, today.day)
 
-	#COME BACK: Join with Tickets??? Must find sum of each flight's (num_of_ticket_sold * base_ticket_price)
+	#SELECT (count(Ticket_ID) * Base_ticket_price) as price_each_flight FROM Ticket NATURAL JOIN Flight WHERE Airline_name = %s AND Purchase_date >= %S AND Purchase_date <= %s GROUP BY Flight_num
+	#SELECT sum(price_each_flight) FROM (subquery) GROUP BY 
+	# SELECT sum(Base_ticket_price) as revenue FROM Ticket NATURAL JOIN Flight WHERE Airline_name = %s AND Purchase_date >= %S AND Purchase_date <= %s
 	cursor = conn.cursor()
 	query1 = "SELECT sum(Base_ticket_price) as revenue FROM Flight WHERE Airline_name = %s AND Purchase_date >= %s AND Purchase_date <= %s GROUP BY Airline_name"
 	cursor.execute(query1, (airline, last_month, today))
