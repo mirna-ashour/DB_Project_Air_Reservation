@@ -16,11 +16,191 @@ conn = pymysql.connect(host='localhost',
                        cursorclass=pymysql.cursors.DictCursor)
 
 #Define a route to hello function
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def hello():
-	return render_template('index.html')
+	cursor = conn.cursor()
+	if request.method == 'POST':
+		source_city = request.form['source_city']
+		destination_city = request.form['destination_city']
+		source_airp = request.form['source_airp']
+		destination_airp = request.form['destination_airp']
+		depart_date = request.form['depart']
+		return_date = request.form['return']
+		trip_type = request.form['options']
+		if depart_date != '' and return_date != '':
+			if source_city != '':
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+				cursor.execute(query3, (source_city, destination_city, depart_date, return_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+					cursor.execute(query4, (source_city, destination_city, depart_date, return_date))
+					returning = cursor.fetchall()
+			else:
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+				cursor.execute(query3, (source_airp, destination_airp, depart_date, return_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+					cursor.execute(query4, (source_airp, destination_airp, depart_date, return_date))
+					returning = cursor.fetchall()
+		elif depart_date != '':
+			if source_city != '':
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s)'
+				cursor.execute(query3, (source_city, destination_city, depart_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s)'
+					cursor.execute(query4, (source_city, destination_city, depart_date))
+					returning = cursor.fetchall()
+			else:
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s)'
+				cursor.execute(query3, (source_airp, destination_airp, depart_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s)'
+					cursor.execute(query4, (source_airp, destination_airp, depart_date))
+					returning = cursor.fetchall()
+		elif return_date != '':
+			if source_city != '':
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Arrival_date = %s)'
+				cursor.execute(query3, (source_city, destination_city, return_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND Arrival_date = %s)'
+					cursor.execute(query4, (source_city, destination_city, return_date))
+					returning = cursor.fetchall()
+			else:
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Arrival_date = %s)'
+				cursor.execute(query3, (source_airp, destination_airp, return_date))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND Arrival_date = %s)'
+					cursor.execute(query4, (source_airp, destination_airp, return_date))
+					returning = cursor.fetchall()
+		else:
+			if source_city != '':
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s)'
+				cursor.execute(query3, (source_city, destination_city))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s)'
+					cursor.execute(query4, (source_city, destination_city))
+					returning = cursor.fetchall()
+			else:
+				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s)'
+				cursor.execute(query3, (source_airp, destination_airp))
+				going = cursor.fetchall()
+				returning = 'None'
+				if trip_type == 'option2': # trip_type = roundtrip
+					query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s)'
+					cursor.execute(query4, (source_airp, destination_airp))
+					returning = cursor.fetchall()
+		conn.commit()
+		cursor.close()
+		return render_template('index.html', going=going, returning=returning, trip_type=trip_type)
+	going = 'None'
+	returning = 'None'
+	trip_type = 'None'
+	return render_template('index.html', going=going, returning=returning, trip_type=trip_type)
 
-
+# @app.route('/index')
+# def index():
+	# cursor = conn.cursor()
+	# if request.method == 'POST':
+	# 	source_city = request.form['source_city']
+	# 	destination_city = request.form['destination_city']
+	# 	source_airp = request.form['source_airp']
+	# 	destination_airp = request.form['destination_airp']
+	# 	depart_date = request.form['depart']
+	# 	return_date = request.form['return']
+	# 	trip_type = request.form['options']
+	# 	if depart_date != '' and return_date != '':
+	# 		if source_city != '':
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+	# 			cursor.execute(query3, (source_city, destination_city, depart_date, return_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+	# 				cursor.execute(query4, (source_city, destination_city, depart_date, return_date))
+	# 				returning = cursor.fetchall()
+	# 		else:
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+	# 			cursor.execute(query3, (source_airp, destination_airp, depart_date, return_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
+	# 				cursor.execute(query4, (source_airp, destination_airp, depart_date, return_date))
+	# 				returning = cursor.fetchall()
+	# 	elif depart_date != '':
+	# 		if source_city != '':
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s)'
+	# 			cursor.execute(query3, (source_city, destination_city, depart_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s)'
+	# 				cursor.execute(query4, (source_city, destination_city, depart_date))
+	# 				returning = cursor.fetchall()
+	# 		else:
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s)'
+	# 			cursor.execute(query3, (source_airp, destination_airp, depart_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND (Departure_date = %s)'
+	# 				cursor.execute(query4, (source_airp, destination_airp, depart_date))
+	# 				returning = cursor.fetchall()
+	# 	elif return_date != '':
+	# 		if source_city != '':
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Arrival_date = %s)'
+	# 			cursor.execute(query3, (source_city, destination_city, return_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s) AND Arrival_date = %s)'
+	# 				cursor.execute(query4, (source_city, destination_city, return_date))
+	# 				returning = cursor.fetchall()
+	# 		else:
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s) AND (Arrival_date = %s)'
+	# 			cursor.execute(query3, (source_airp, destination_airp, return_date))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s) AND Arrival_date = %s)'
+	# 				cursor.execute(query4, (source_airp, destination_airp, return_date))
+	# 				returning = cursor.fetchall()
+	# 	else:
+	# 		if source_city != '':
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s)'
+	# 			cursor.execute(query3, (source_city, destination_city))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.City = %s)'
+	# 				cursor.execute(query4, (source_city, destination_city))
+	# 				returning = cursor.fetchall()
+	# 		else:
+	# 			query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.Name = %s)'
+	# 			cursor.execute(query3, (source_airp, destination_airp))
+	# 			going = cursor.fetchall()
+	# 			returning = 'None'
+	# 			if trip_type == 'option2': # trip_type = roundtrip
+	# 				query4 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Arrival_airport_ID = A.Airport_ID AND A.Name = %s) AND (F.Departure_airport_ID = B.Airport_ID AND B.Name = %s)'
+	# 				cursor.execute(query4, (source_airp, destination_airp))
+	# 				returning = cursor.fetchall()
+	# 	conn.commit()
+	# 	cursor.close()
+	# 	return render_template('index.html', going=going, returning=returning, trip_type=trip_type)		
 								##################################### LOGIN AND REGISTRATION CODE ##############################################
 
 #General login page route

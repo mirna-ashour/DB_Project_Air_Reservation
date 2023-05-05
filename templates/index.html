@@ -5,9 +5,120 @@
 {% if not message %}
 	<a href="/login">Login</a>
 	<a href="/register">Register</a>
+
+	<h2>Search For Flights by Airport Name or City</h2>
+	<form action="/" method="POST">
+		  <div class="row">
+			<div class="col">
+				<input type="text" class="form-control" name = "source_airp" placeholder="From (Airport Name)"/> </br>
+			</div>
+			<div class="col">
+				<input type="text" class="form-control" name = "source_city" placeholder="From (City)"/> </br>
+			</div>
+		  </div>
+		  <div class="row">
+			<div class="col">
+				<input type="text" class="form-control" name = "destination_airp" placeholder="To (Airport Name)"/> </br>
+			</div>
+			<div class="col">
+				<input type="text" class="form-control" name = "destination_city" placeholder="To (City)"/> </br>
+			</div>
+		  </div>
+		<div class="form-check form-check-inline">
+			<input class="form-check-input" type="radio" name="options" id="inlineRadio1" value="option1">
+			<label class="form-check-label" for="inlineRadio1">One-Way</label>
+		  </div>
+		  <div class="form-check form-check-inline">
+			<input class="form-check-input" type="radio" name="options" id="inlineRadio2" value="option2">
+			<label class="form-check-label" for="inlineRadio2">Round Trip</label>
+		  </div>
+		<div class="row">
+			<div class="col-4">
+				<b>Departure Date</b>
+			</div>
+			<div class="col-4">
+				<b>Return Date</b>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-4">
+				<input type="date" name = "depart" placeholder="Depart"/>
+			</div>
+			<div class="col-4">
+				   <input type="date" name = "return" placeholder="Return"/>
+			</div>
+		</div>
+		<br>
+		<input type="submit" value = "Search" /> </br>
+	<br>
+	</form>
+	
+	{% if going != 'None' %}
+		{% if trip_type == 'option2' %}   <!-- Round Trip -->
+			<h4>Departing Flights</h4>
+		{% else %}    <!-- One Way -->
+			<h4>Flights</h4>
+		{% endif %}
+		<table class = "table">
+			<th>Airline Name</th>
+			<th>Flight Number</th>
+			<th>Departure Time</th>
+			<th>Departure Date</th>
+			<th>Arrival Time</th>
+			<th>Arrival Date</th>
+			<th>Departure City</th>
+			<th>Arrival City</th>
+			<th>Departure Airport</th>
+			<th>Arrival Airport</th>
+		{% for row in going %}
+			<tr>
+				<td>{{row['Airline_name']}}</td>
+				<td>{{row['Flight_num']}}</td>
+				<td>{{row['Departure_time']}}</td>
+				<td>{{row['Departure_date']}}</td>
+				<td>{{row['Arrival_time']}}</td>
+				<td>{{row['Arrival_date']}}</td>
+				<td>{{row['City']}}</td>
+				<td>{{row['B.City']}}</td>
+				<td>{{row['Name']}}</td>
+				<td>{{row['B.Name']}}</td>
+			</tr>
+		{% endfor %}
+		</table>
+		{% if trip_type == 'option2' %}
+		<h4>Returning Trips</h4>
+		<table class = "table">
+			<th>Airline Name</th>
+			<th>Flight Number</th>
+			<th>Departure Time</th>
+			<th>Departure Date</th>
+			<th>Arrival Time</th>
+			<th>Arrival Date</th>
+			<th>Departure City</th>
+			<th>Arrival City</th>
+			<th>Departure Airport</th>
+			<th>Arrival Airport</th>
+		{% for row in returning %}
+			<tr>
+				<td>{{row['Airline_name']}}</td>
+				<td>{{row['Flight_num']}}</td>
+				<td>{{row['Departure_time']}}</td>
+				<td>{{row['Departure_date']}}</td>
+				<td>{{row['Arrival_time']}}</td>
+				<td>{{row['Arrival_date']}}</td>
+				<td>{{row['City']}}</td>
+				<td>{{row['B.City']}}</td>
+				<td>{{row['Name']}}</td>
+				<td>{{row['B.Name']}}</td>
+			</tr>
+		{% endfor %}
+		</table>
+		{% endif %}
+	{% endif %}
+<br>
 {% endif %}
 
-{% if message %}
+<!-- {% if message %}
 	<a href="/logout">Logout</a>
 	<a href="/remove_account">Remove Account</a>
 	<p class="message">You are logged in {{message}}. You have {{num}} follower(s)</p> </br>
@@ -23,6 +134,6 @@
 	        <p>{{line}}</p>
 	        <hr>
 	{% endfor %}
-	{% endif %}
+	{% endif %} -->
 
 {% endblock %}
