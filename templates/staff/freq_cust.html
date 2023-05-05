@@ -1,0 +1,21 @@
+{% extends "header.html" %}
+
+{% block body %}
+
+<h3>Most frequent customer in the last year:</h3>
+<p><b>Name:</b></p>
+
+
+<form action="/staff/freq_cust" method="POST" class="col-3">
+    <input type="email" class="form-control" name = "email" placeholder="Customer email" required/> </br>
+
+	<input class="btn btn-primary" type="submit" value = "Search" />
+</form>
+
+
+
+<br><br>
+<a href="/logout">Logout</a>
+<a href="/as_home">Home</a>
+
+{% endblock %}

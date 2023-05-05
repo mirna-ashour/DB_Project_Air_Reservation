@@ -6,13 +6,14 @@
     <input type="text" class="form-control" name = "flightNum" placeholder="Flight Number" required/> </br>
     <input type="date" class="form-control" name = "departureDate" placeholder="Departure Date" required/> </br>
     <input type="time" class="form-control" name = "departureTime" placeholder="Departure Time" required/> </br>
-    <label for="showRatings">Show customer ratings?</label><br>   
+    <label for="showRatings">Show customer ratings:</label><br>   
     <input type="radio" id="showRatingsYes" name="showRatings" value="true">Yes<br>
     <input type="radio" id="showRatingsNo" name="showRatings" value="false" checked>No<br><br>
     <input class="btn btn-primary" type="submit" value = "View" />
 </form>
 
 {% if error %}
+<br><br>
 <p class="error"><strong>Error:</strong> {{error}}</p>
 {% endif %}
 
