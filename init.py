@@ -11,7 +11,7 @@ conn = pymysql.connect(host='localhost',
 		            #    port = 8889,
                        user='root',
                        password='',
-                       db='air_reservation',
+                       db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
 
