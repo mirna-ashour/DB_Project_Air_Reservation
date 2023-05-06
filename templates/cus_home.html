@@ -107,6 +107,7 @@
 		<input class="form-check-input" type="radio" name="options" id="inlineRadio2" value="option2">
 		<label class="form-check-label" for="inlineRadio2">Round Trip</label>
 	  </div>
+	  <br><br>
 	<div class="row">
 		<div class="col-4">
 			<b>Departure Date</b>
@@ -117,14 +118,14 @@
 	</div>
 	<div class="row">
 		<div class="col-4">
-			<input type="date" name = "depart" placeholder="Depart"/>
+			<input class="form-control" type="date" name = "depart" placeholder="Depart"/>
 		</div>
 		<div class="col-4">
-   			<input type="date" name = "return" placeholder="Return"/>
+   			<input class="form-control" type="date" name = "return" placeholder="Return"/>
 		</div>
 	</div>
 	<br>
-    <input type="submit" value = "Search" /> </br>
+    <input class= "btn btn-primary" type="submit" value = "Search" /> </br>
 <br>
 </form>
 
@@ -249,5 +250,5 @@
 <a href="/track_spending"> Track My Spending</a>
 
 <br>
-<a href="/logout">Logout</a>
+<a href="/logout">Logout</a><br>
 {% endblock %}

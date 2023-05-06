@@ -6,6 +6,7 @@
 	<a href="/login">Login</a>
 	<a href="/register">Register</a>
 
+	<br><br>
 	<h2>Search For Flights by Airport Name or City</h2>
 	<form action="/" method="POST">
 		  <div class="row">
@@ -25,13 +26,14 @@
 			</div>
 		  </div>
 		<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" name="options" id="inlineRadio1" value="option1">
-			<label class="form-check-label" for="inlineRadio1">One-Way</label>
+			<input class="form-check-input" type="radio" name="options" id="inlineRadio1" value="option1" checked>
+			<label class="form-check-label" for="inlineRadio1">One-Way </label>
 		  </div>
 		  <div class="form-check form-check-inline">
 			<input class="form-check-input" type="radio" name="options" id="inlineRadio2" value="option2">
 			<label class="form-check-label" for="inlineRadio2">Round Trip</label>
 		  </div>
+		  <br><br>
 		<div class="row">
 			<div class="col-4">
 				<b>Departure Date</b>
@@ -49,9 +51,15 @@
 			</div>
 		</div>
 		<br>
-		<input type="submit" value = "Search" /> </br>
+		<input class="btn btn-primary" type="submit" value = "Search" /> </br>
 	<br>
 	</form>
+
+	{% if error%}
+	<br><br>
+	<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}
+
 	
 	{% if going != 'None' %}
 		{% if trip_type == 'option2' %}   <!-- Round Trip -->

@@ -2,16 +2,26 @@
 
 {% block body %}
 
-<form action="/change_status_auth" method="POST" class="col-3">
+<h3>Change the satus of flight</h3><br><br>
+
+<form action="/staff/change_status" method="POST" class="col-3">
     <input type="text" class="form-control" name = "flightNum" placeholder="Flight Number" required/> </br>
-    <input type="text" class="form-control" name = "airlineName" placeholder="Airline" required/> </br>
+    <!-- <input type="text" class="form-control" name = "airlineName" placeholder="Airline" required/> </br> -->
 
     <input type="date" class="form-control" name = "departDate" placeholder="Departure Date" required/> </br>
-    <input type="time" class="form-control" name = "departTime" placeholder="Departure Time" required/> </br>
+    <input type="time" class="form-control" name = "departTime" placeholder="Departure Time" required/> </br><br>
 
-    <input type="text" class="form-control" name = "newStatus" placeholder="Status Update" required/> </br>
+    <input class="form-check-input" type="radio" name="newStatus" id="inlineRadio1" value="On-time"></input>On-time
+    <br><input class="form-check-input" type="radio" name="newStatus" id="inlineRadio1" value="Delayed" checked></input>Delayed
+
+    <br><br>
     <input class="btn btn-primary" type="submit" value = "Update" />
 </form>
+
+{% if error %}
+<br><br>
+<p class="error"><strong>Error:</strong> {{error}}</p>
+{% endif %}
 
 <br><br>
 <a href="/logout">Logout</a>

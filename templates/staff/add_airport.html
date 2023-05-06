@@ -1,13 +1,20 @@
 {% extends "header.html" %}
 
 {% block body %}
+
+<h3>Add a new aiport:</h3><br><br>
+
 <form action="/add_airport_auth" method="POST" class="col-3">
     <input type="text" class="form-control" name = "ap_name" placeholder="Airport Name" required/> </br>
 
 	<input type="text" class="form-control" name = "city" placeholder="City" required/> </br>
-    <input type="text" class="form-control" name = "country" placeholder="Country" required/> </br>
+    <input type="text" class="form-control" name = "country" placeholder="Country" required/> 
 
-    <input type="text" class="form-control" name = "ap_type" placeholder="Type (Domestic, Intenational, Both)" required/> </br>
+    <input class="form-check-input" type="radio" name="ap_type" id="inlineRadio1" value="Domestic"></input>Domestic
+    <br><input class="form-check-input" type="radio" name="ap_type" id="inlineRadio1" value="International" checked></input>International
+    <br><input class="form-check-input" type="radio" name="ap_type" id="inlineRadio1" value="Both" checked></input>Both
+
+    <br><br>
     <input class="btn btn-primary" type="submit" value = "Add Airport" />
 </form>
 

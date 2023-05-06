@@ -1,0 +1,79 @@
+{% extends "header.html" %}
+
+{% block body %}
+
+<h2>Search For Flights by Airport Name or City</h2>
+	<form action="/staff/view_flights" method="POST">
+		  <div class="row">
+			<div class="col">
+				<input type="text" class="form-control" name = "source_airp" placeholder="From (Airport Name)"/> </br>
+			</div>
+			<div class="col">
+				<input type="text" class="form-control" name = "source_city" placeholder="From (City)"/> </br>
+			</div>
+		  </div>
+		  <div class="row">
+			<div class="col">
+				<input type="text" class="form-control" name = "destination_airp" placeholder="To (Airport Name)"/> </br>
+			</div>
+			<div class="col">
+				<input type="text" class="form-control" name = "destination_city" placeholder="To (City)"/> </br>
+			</div>
+		  </div>
+		
+		<div class="row">
+			<div class="col-4">
+				<b>Date Range Start</b>
+			</div>
+			<div class="col-4">
+				<b>Date Range End</b>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-4">
+				<input type="date" name = "rangeStart" placeholder="From" />
+			</div>
+			<div class="col-4">
+				   <input type="date" name = "rangeEnd" placeholder="To" />
+			</div>
+		</div>
+		<br>
+		<input class="btn btn-primary" type="submit" value = "Search" /> </br>
+	<br>
+	</form>
+	
+	{% if going != 'None' %}
+    <br><br>
+			<h4>Flights</h4>
+		<table class = "table">
+			<th>Flight Number</th>
+			<th>Departure Time</th>
+			<th>Departure Date</th>
+			<th>Arrival Time</th>
+			<th>Arrival Date</th>
+			<th>Departure City</th>
+			<th>Arrival City</th>
+			<th>Departure Airport</th>
+			<th>Arrival Airport</th>
+		{% for row in going %}
+        <tr>
+            <td>{{row['Flight_num']}}</td>
+            <td>{{row['Departure_time']}}</td>
+            <td>{{row['Departure_date']}}</td>
+            <td>{{row['Arrival_time']}}</td>
+            <td>{{row['Arrival_date']}}</td>
+            <td>{{row['City']}}</td>
+            <td>{{row['B.City']}}</td>
+            <td>{{row['Name']}}</td>
+            <td>{{row['B.Name']}}</td>
+        </tr>
+		{% endfor %}
+		</table>
+	{% endif %}
+
+{% if error %}
+<br><br>
+<p class="error"><strong>Error:</strong> {{error}}</p>
+{% endif %}
+ 
+{% endblock %}

@@ -2,6 +2,9 @@
 
 {% block body %}
 
+<h3>Customer Staff Registration:</h3>
+<br>
+
 {% for mess in get_flashed_messages()  %}
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
   <button type="button" class="close" data-dismiss="alert" aria-label="Close" class="fade close">
@@ -11,6 +14,7 @@
   </div>
 {% endfor %}
 
+<br>
 <form action="/registerAuth_cus" method="POST">
     <div class="row">
       <div class="col">

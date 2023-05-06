@@ -2,7 +2,9 @@
 
 {% block body %}
 
-<form action="/add_airplane_auth" method="POST" class="col-3">
+<h3>Add new airplane:</h3><br><br>
+
+<form action="/staff/add_airplane" method="POST" class="col-3">
     <input type="text" class="form-control" name = "manufacturer" placeholder="Manufacturer Name" required/> </br>
     <input type="date" class="form-control" name = "manufactureDate" placeholder="Manufacture Date" required/> </br>
     <input type="number" class="form-control" name = "age" placeholder="Plane Age (Years)" required/> </br>
@@ -11,6 +13,31 @@
     <input class="btn btn-primary" type="submit" value = "Add Airplane" />
 </form>
 
+{% if all_airplanes != None %}
+    <br><br>
+			<h4>All planes owned by airline:</h4>
+		<table class = "table">
+            <th>Airplane ID</th>
+			<th>Number of seats</th>
+			<th>Manufacturing company</th>
+			<th>Manufacturing date</th>
+			<th>Age</th>
+		{% for row in all_airplanes %}
+        <tr>
+            <td>{{row['Airplane_ID']}}</td>
+            <td>{{row['Num_of_seats']}}</td>
+            <td>{{row['Manufacturing_company']}}</td>
+            <td>{{row['Manufacturing_date']}}</td>
+            <td>{{row['Age']}}</td>
+        </tr>
+		{% endfor %}
+		</table>
+	{% endif %}
+
+{% if error %}
+<br><br>
+<p class="error"><strong>Error:</strong> {{error}}</p>
+{% endif %}
 
 <br><br>
 <a href="/logout">Logout</a>

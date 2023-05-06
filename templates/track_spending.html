@@ -1,9 +1,14 @@
 {% extends "header.html" %}
 
 {% block body %}
-<h2>Track My Spending</h2>
 
-<form action="/track_spending" method="POST">
+<a href="/logout">Logout</a>
+<a href="/cus_home">Home</a>
+
+<h2>Track My Spending</h2>
+<br>
+
+<form class="" action="/track_spending" method="POST">
 	<div class="row">
 		<div class="col-4">
 			<b>From</b>
@@ -14,15 +19,17 @@
 	</div>
 	<div class="row">
 		<div class="col-4">
-			<input type="date" name = "from" placeholder="From"/>
+			<input class="form-control" type="date" name = "from" placeholder="From"/>
 		</div>
 		<div class="col-4">
-			<input type="date" name = "until" placeholder="To"/>
+			<input class="form-control" type="date" name = "until" placeholder="To"/>
 		</div>
 	</div>
-	<input type="submit" value = "Track" />
+	<br><br>
+	<input class="btn btn-primary" type="submit" value = "Track" />
 </form>
-<br>
+<br><br> 
+
 <h3>Total Spent from {{from_date}} to {{until_date}}: ${{total_cost['sum(Base_ticket_price)']}}</h3>
 
 <table class = "table">
@@ -35,5 +42,7 @@
         </tr>
     {% endfor %}
  </table>
+
+
 
 {% endblock %}

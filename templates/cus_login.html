@@ -12,6 +12,13 @@
   {% endif %}
 {% endwith %}
 
+{% if error %}
+<br>
+<p class="error"><strong>Error:</strong> {{error}}</p>
+{% endif %}
+
+<h3>Customer Login:</h3>
+<br>
 <form action="/loginAuth_cus" method="POST">
 	<input type="text" class="form-control" name = "Email" placeholder="email" required/> </br>
 	<input type="password" class="form-control" name = "Password" placeholder="password" required/></br>
