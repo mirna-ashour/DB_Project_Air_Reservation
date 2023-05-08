@@ -765,6 +765,7 @@ def flight_ratings():
 def flight_ratings_auth():
 	error = None
 	showRatings = False
+	data1 = None
 	flightNum = request.form['flightNum']
 	departureDate = request.form['departureDate']
 	departureTime = request.form['departureTime']
