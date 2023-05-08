@@ -8,9 +8,9 @@ app = Flask(__name__)
 
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
-		            #    port = 8889,
+		               port = 8889,
                        user='root',
-                       password='',
+                       password='root',
                        db='Airline_Reservation',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -18,11 +18,6 @@ conn = pymysql.connect(host='localhost',
 #Define a route to hello function
 @app.route('/', methods=['GET', 'POST'])
 def hello():
-	error = None
-	going = 'None'
-	returning = 'None'
-	trip_type = 'None'
-	
 	cursor = conn.cursor()
 	if request.method == 'POST':
 		source_city = request.form['source_city']
@@ -32,11 +27,6 @@ def hello():
 		depart_date = request.form['depart']
 		return_date = request.form['return']
 		trip_type = request.form['options']
-		today = str(date.today())
-		if depart_date < today:
-			error = "You can only view future flights."
-			return render_template('index.html', going=going, returning=returning, trip_type=trip_type, error=error)
-		
 		if depart_date != '' and return_date != '':
 			if source_city != '':
 				query3 = 'SELECT * From (Flight as F JOIN Airport as A JOIN Airport as B) WHERE (F.Departure_airport_ID = A.Airport_ID AND A.City = %s) AND (F.Arrival_airport_ID = B.Airport_ID AND B.City = %s) AND (Departure_date = %s) AND (Arrival_date = %s)'
@@ -115,9 +105,14 @@ def hello():
 					returning = cursor.fetchall()
 		conn.commit()
 		cursor.close()
-		return render_template('index.html', going=going, returning=returning, trip_type=trip_type, error=error)
-	
-	return render_template('index.html', going=going, returning=returning, trip_type=trip_type, error=error)	
+		return render_template('index.html', going=going, returning=returning, trip_type=trip_type)
+	else:
+		going = 'None'
+		returning = 'None'
+		trip_type = 'None'
+		conn.commit()
+		cursor.close()
+		return render_template('index.html', going=going, returning=returning, trip_type=trip_type)
 
 
 								##################################### LOGIN AND REGISTRATION CODE ##############################################
