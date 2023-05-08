@@ -227,6 +227,7 @@ def registerAuth_cus():
 	Passport_num = request.form['Passport_num']
 	Passport_expiration = request.form['Passport_expiration']
 	Passport_country = request.form['Passport_country']
+	phone_number = request.form['phone_num']
 	Date_of_birth = request.form['Date_of_birth']
 
 	error = None
@@ -247,6 +248,8 @@ def registerAuth_cus():
 	else:
 		ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
 		cursor.execute(ins, (Email, Password, FirstName, LastName, Building_num, Street_name, Apartment_num, City, State, Zip_code, Passport_num, Passport_expiration, Passport_country, Date_of_birth))
+		ins2 = "INSERT INTO Cust_phone_num VALUES (%s, %s)"
+		cursor.execute(ins2, (Email, phone_number))
 		conn.commit()
 		cursor.close()
 		error = "You have been successfully registered! Please login now."
@@ -270,6 +273,8 @@ def registerAuth_as():
 	First_name = request.form['First_name']
 	Last_name = request.form['Last_name']
 	Date_of_birth = request.form['Date_of_birth']
+	phone_number = request.form['phone_num']
+	email = request.form['email']
 
 	error = None
 
@@ -289,6 +294,10 @@ def registerAuth_as():
 	else:
 		ins = 'INSERT INTO Airline_Staff VALUES(%s, %s, %s, %s, %s, %s)'
 		cursor.execute(ins, (Username, Airline_name, Password, First_name, Last_name, Date_of_birth))
+		ins2 = "INSERT INTO Staff_phone_num VALUES (%s, %s)"
+		cursor.execute(ins2, (Username, phone_number))
+		ins3 = "INSERT INTO Staff_email VALUES (%s, %s)"
+		cursor.execute(ins3, (Username, email))
 		conn.commit()
 		cursor.close()
 		error = "You have been successfully registered! Please login now."
