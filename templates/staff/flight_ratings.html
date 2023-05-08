@@ -20,12 +20,12 @@
 {% endif %}
 
 {% if error == None%}
-<p><b>Flight Number:</b> {{ data1['Flight_num'] }} </p>
-<p><b>Average Rating:</b> {{ data1['Avg_rating'] }}</p>
+<p><b>Flight Number:</b> {{ avg_rating['Flight_num'] }} </p>
+<p><b>Average Rating:</b> {{ avg_rating['Avg_rating'] }}</p>
 
 <br><br>
 
-{% if data2 != None %}
+{% if all_ratings != None %}
 <h2>Customer ratings for flight:</h2>
 <table class = "table">
     <th>First Name</th>
@@ -33,7 +33,7 @@
     <th>Email</th>
     <th>Rating</th>
     <th>Comment</th>
-{% for row in data2 %}
+{% for row in all_ratings %}
     <tr>
         <td>{{row['FirstName']}}</td>
         <td>{{row['LastName']}}</td>

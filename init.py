@@ -775,7 +775,7 @@ def flight_ratings_auth():
 	cursor = conn.cursor()
 	query1 = 'SELECT Flight_num, avg(Rate) as Avg_rating FROM Has_taken WHERE Airline_name = %s AND Flight_num = %s AND Departure_date = %s AND Departure_time = %s GROUP BY Flight_num'
 	cursor.execute(query1, (airline, flightNum, departureDate, departureTime))
-	data1 = cursor.fetchall()
+	data1 = cursor.fetchone()
 	data2 = None
 
 	if(data1):
